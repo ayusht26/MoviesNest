@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Play, Check, Loader2 } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { getTVSeason, imgUrl } from '../../lib/tmdb';
 import Skeleton from '../ui/Skeleton';
 
@@ -21,9 +21,10 @@ interface Season {
 interface Props {
   showId: number;
   seasons: Season[];
+  onPlayEpisode?: (season: number, episode: number, title: string) => void;
 }
 
-export default function EpisodeSelector({ showId, seasons }: Props) {
+export default function EpisodeSelector({ showId, seasons, onPlayEpisode }: Props) {
   const [activeSeason, setActiveSeason] = useState(seasons.length > 0 ? seasons.filter(s => s.season_number > 0)[0]?.season_number || 1 : 1);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +60,7 @@ export default function EpisodeSelector({ showId, seasons }: Props) {
             <button
               key={season.season_number}
               onClick={() => setActiveSeason(season.season_number)}
-              className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border ${
+              className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
                 isActive
                   ? 'bg-cyan border-cyan text-black shadow-md shadow-cyan/10 font-bold'
                   : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:text-white hover:border-neutral-700'
@@ -89,12 +90,11 @@ export default function EpisodeSelector({ showId, seasons }: Props) {
         ) : episodes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {episodes.map(episode => {
-              const playHref = `/play/tv/${showId}/${activeSeason}/${episode.episode_number}`;
               return (
-                <a
+                <button
                   key={episode.episode_number}
-                  href={playHref}
-                  className="flex gap-3 text-left p-3 rounded-lg border border-neutral-800/40 bg-neutral-900/25 hover:bg-neutral-900/65 hover:border-neutral-800 transition-all duration-200 group w-full cursor-pointer"
+                  onClick={() => onPlayEpisode?.(activeSeason, episode.episode_number, episode.name)}
+                  className="flex gap-3 text-left p-3 rounded-lg border border-neutral-800/40 bg-neutral-900/25 hover:bg-neutral-900/65 hover:border-neutral-800 transition-all duration-200 group w-full cursor-pointer focus:outline-none"
                 >
                   {/* Thumbnail Still */}
                   <div className="relative w-[110px] sm:w-[130px] aspect-[16/10] rounded overflow-hidden bg-neutral-950 flex-shrink-0">
@@ -125,7 +125,7 @@ export default function EpisodeSelector({ showId, seasons }: Props) {
                       </p>
                     )}
                   </div>
-                </a>
+                </button>
               );
             })}
           </div>

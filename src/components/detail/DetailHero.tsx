@@ -1,9 +1,10 @@
 'use client';
 import { useState } from 'react';
-import { Play, Calendar, Clock, Film, Tv, Star } from 'lucide-react';
+import { Play, Calendar, Clock, Film, Tv, Star, X } from 'lucide-react';
 import { backdropUrl, imgUrl } from '../../lib/tmdb';
 import { formatRuntime } from '../../lib/utils';
 import Skeleton from '../ui/Skeleton';
+import VidkingPlayer from '../player/VidkingPlayer';
 
 interface Genre {
   id: number;
@@ -11,6 +12,7 @@ interface Genre {
 }
 
 interface Props {
+  tmdbId: string | number;
   title: string;
   backdrop_path: string;
   poster_path: string;
@@ -22,10 +24,10 @@ interface Props {
   runtime?: number;
   tagline?: string;
   media_type: 'movie' | 'tv';
-  playUrl?: string;
 }
 
 export default function DetailHero({
+  tmdbId,
   title,
   backdrop_path,
   poster_path,
@@ -37,12 +39,15 @@ export default function DetailHero({
   runtime,
   tagline,
   media_type,
-  playUrl,
 }: Props) {
   const [backdropLoaded, setBackdropLoaded] = useState(false);
   const [posterLoaded, setPosterLoaded] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  
   const year = (release_date || first_air_date || '').slice(0, 4);
   const rawTitle = title.endsWith('.') ? title : `${title}.`;
+
+  const poster = poster_path ? imgUrl(poster_path, 'w342') : '';
 
   return (
     <div className="relative w-full min-h-[50vh] lg:h-[65vh] flex items-end overflow-hidden pb-12 pt-28 bg-[#0a0a0a]">
@@ -64,7 +69,7 @@ export default function DetailHero({
         <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
       </div>
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <div className="relative z-10 max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-end animate-fade-up">
           {/* Poster Card */}
           <div className="hidden lg:block w-[220px] aspect-[2/3] rounded-lg overflow-hidden shadow-level-3 border border-neutral-800 flex-shrink-0 group relative">
@@ -84,7 +89,7 @@ export default function DetailHero({
           {/* Details Content */}
           <div className="flex-1 text-center lg:text-left">
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-3">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-cyan/15 text-cyan border border-cyan/20 text-[10px] font-mono font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-cyan/15 text-cyan border border-cyan/20 text-[10px] font-mono font-bold uppercase tracking-widest">
                 {media_type === 'tv' ? <Tv className="w-3 h-3" /> : <Film className="w-3 h-3" />}
                 {media_type === 'tv' ? 'Series' : 'Movie'}
               </span>
@@ -102,7 +107,7 @@ export default function DetailHero({
               ) : null}
             </div>
 
-            {/* Title - Vercel Display font style (period terminated, negative tracking, semi-bold) */}
+            {/* Title - Verge display style */}
             <h1 className="font-sans text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-white leading-tight mb-2">
               {rawTitle}
             </h1>
@@ -137,21 +142,44 @@ export default function DetailHero({
               ))}
             </div>
 
-            {/* Action Buttons */}
-            {playUrl && (
-              <div className="flex justify-center lg:justify-start">
-                <a
-                  href={playUrl}
-                  className="group flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-cyan text-black text-xs font-bold uppercase tracking-wider hover:bg-white transition-all duration-300 shadow-md shadow-cyan/10"
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                  Launch Player
-                </a>
-              </div>
-            )}
+            {/* Action Play Button */}
+            <div className="flex justify-center lg:justify-start">
+              <button
+                onClick={() => setIsPlaying(true)}
+                className="group flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-cyan text-black text-xs font-mono font-bold uppercase tracking-wider hover:bg-white transition-all duration-300 shadow-md shadow-cyan/10 cursor-pointer"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                Play Now.
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* In-place Streaming Player Overlay */}
+      {isPlaying && (
+        media_type === 'movie' ? (
+          <VidkingPlayer
+            type="movie"
+            tmdbId={tmdbId}
+            title={title}
+            posterUrl={poster}
+            autoPlay={true}
+            onClose={() => setIsPlaying(false)}
+          />
+        ) : (
+          <VidkingPlayer
+            type="tv"
+            tmdbId={tmdbId}
+            season={1}
+            episode={1}
+            title={`${title} - Season 1, Episode 1`}
+            posterUrl={poster}
+            autoPlay={true}
+            onClose={() => setIsPlaying(false)}
+          />
+        )
+      )}
     </div>
   );
 }

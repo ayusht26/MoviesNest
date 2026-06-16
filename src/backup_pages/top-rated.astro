@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
+import { getTopRatedMovies, getTopRatedTV } from '../lib/tmdb';
+
+type Tab = 'movie' | 'tv';
+const tab = (Astro.url.searchParams.get('type') || 'movie') as Tab;
+
+let items: any = { results: [] };
+
+try {
+  if (tab === 'movie') {
+    items = await getTopRatedMovies();
+  } else {
+    items = await getTopRatedTV();
+  }
+} catch {}
+---
+
+<BaseLayout title="Top Rated — MoviesNest" description="Top rated movies and TV shows.">
+  <Navbar client:load />
+
+  <main class="max-w-7xl mx-auto px-4 pt-24 pb-16 min-h-screen">
+    <h1 class="text-2xl font-bold text-white mb-6">Top Rated</h1>
+
+    <div class="flex gap-2 mb-8">
+      <a
+        href="/top-rated?type=movie"
+        class={`px-4 py-1.5 rounded-full text-xs font-medium transition-all border ${
+          tab === 'movie' ? 'bg-cyan-400 text-black border-cyan-400' : 'bg-transparent text-gray-400 border-gray-700 hover:text-white'
+        }`}
+      >
+        Movies
+      </a>
+      <a
+        href="/top-rated?type=tv"
+        class={`px-4 py-1.5 rounded-full text-xs font-medium transition-all border ${
+          tab === 'tv' ? 'bg-cyan-400 text-black border-cyan-400' : 'bg-transparent text-gray-400 border-gray-700 hover:text-white'
+        }`}
+      >
+        TV Shows
+      </a>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {(items?.results || []).slice(0, 30).map((item: any, i: number) => (
+        <a key={item.id} href={`/${tab === 'movie' ? 'movie' : 'tv'}/${item.id}`} class="block group">
+          <div class="aspect-[2/3] rounded-lg overflow-hidden bg-[#1f1f1f] mb-2 relative">
+            <div class="absolute top-1 left-1 z-10 w-6 h-6 rounded-full bg-cyan-400 text-black text-xs font-bold flex items-center justify-center">
+              {i + 1}
+            </div>
+            {item.poster_path ? (
+              <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} alt={item.title || item.name} loading="lazy" class="w-full h-full object-cover" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center text-gray-600 text-xs">No poster</div>
+            )}
+          </div>
+          <p class="text-sm text-white font-medium truncate">{item.title || item.name}</p>
+          <div class="flex items-center gap-1 text-xs text-gray-500">
+            <span class="text-yellow-400">&#9733;</span>
+            <span>{item.vote_average?.toFixed(1)}</span>
+            {(item.release_date || item.first_air_date) && (
+              <span>• {new Date(item.release_date || item.first_air_date).getFullYear()}</span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

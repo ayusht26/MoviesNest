@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/layout/Navbar';
-import TVPageWrapper from '../../components/detail/TVPageWrapper';
+import DetailHero from '../../components/detail/DetailHero';
+import EpisodeSelector from '../../components/player/EpisodeSelector';
 import CastRow from '../../components/detail/CastRow';
 import SimilarRow from '../../components/detail/SimilarRow';
 import Footer from '../../components/layout/Footer';
@@ -11,7 +12,7 @@ const { id } = Astro.params;
 
 let show = null;
 try {
-  show = await getTVShow(id!);
+  show = await getTVShow(id);
 } catch (e) {
   console.error(`Error fetching TV show ${id}:`, e);
 }
@@ -38,9 +39,8 @@ const seasons = show.seasons || [];
   <Navbar client:load cinemaMode={true} />
   
   <div class="relative z-10 cinema-dark min-h-screen">
-    {/* TV Page Wrapper that manages in-place playback */}
-    <TVPageWrapper
-      showId={id!}
+    {/* Detail Hero Section */}
+    <DetailHero
       title={title}
       backdrop_path={backdrop}
       poster_path={poster}
@@ -49,9 +49,19 @@ const seasons = show.seasons || [];
       first_air_date={firstAirDate}
       genres={genres}
       tagline={tagline}
-      seasons={seasons}
+      media_type="tv"
+      playUrl={`/play/tv/${id}/1/1`}
       client:load
     />
+
+    {/* TV Episodes Selector */}
+    <div id="episodes-section" class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mt-12 scroll-mt-24">
+      <h2 class="text-xl sm:text-2xl font-semibold text-white tracking-tight flex items-center gap-2 mb-2">
+        <span class="w-1.5 h-6 rounded-full bg-cyan inline-block animate-pulse" />
+        Stream Episodes.
+      </h2>
+      <EpisodeSelector showId={Number(id)} seasons={seasons} client:load />
+    </div>
 
     {/* Cast & Recommendations */}
     <div class="mt-16 space-y-12 pb-16">

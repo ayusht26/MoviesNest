@@ -1,94 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navbar from '../components/layout/Navbar';
-import HeroSection from '../components/home/HeroSection';
-import TopTenGrid from '../components/home/TopTenGrid';
-import TrendingTabs from '../components/home/TrendingTabs';
-import PlatformSelector from '../components/home/PlatformSelector';
-import GenreRow from '../components/home/GenreRow';
+import SleekSearchPage from '../components/search/SleekSearchPage';
 import Footer from '../components/layout/Footer';
-import { getTrending, getTopRated, getNowPlaying, getDiscoverByNetwork } from '../lib/tmdb';
-
-// Fetch data on the server side (SSR)
-let trendingMoviesData = null;
-let trendingTvData = null;
-let topTenData = null;
-let nowPlayingData = null;
-let netflixData = null;
-
-try {
-  trendingMoviesData = await getTrending('movie', 'week');
-} catch (e) {
-  console.error("Failed fetching trending movies:", e);
-}
-
-try {
-  trendingTvData = await getTrending('tv', 'week');
-} catch (e) {
-  console.error("Failed fetching trending TV series:", e);
-}
-
-try {
-  topTenData = await getTopRated('movie');
-} catch (e) {
-  console.error("Failed fetching top rated movies:", e);
-}
-
-try {
-  nowPlayingData = await getNowPlaying();
-} catch (e) {
-  console.error("Failed fetching now playing:", e);
-}
-
-try {
-  netflixData = await getDiscoverByNetwork('213', 'tv');
-} catch (e) {
-  console.error("Failed fetching initial Netflix shows:", e);
-}
-
-const isBlocked = [trendingMoviesData, trendingTvData, topTenData].every(d => d?.__blocked);
-if (isBlocked) {
-  return Astro.redirect('/blocked');
-}
-
-const trendingMovies = trendingMoviesData?.results || [];
-const trendingTv = trendingTvData?.results || [];
-const topTenMovies = topTenData?.results || [];
-const nowPlaying = nowPlayingData?.results || [];
-const netflixShows = netflixData?.results || [];
-
-// Slice items for Hero Carousel
-const heroItems = nowPlaying.slice(0, 5);
 ---
 
 <BaseLayout 
-  title="MoviesNest — Watch Free Movies and TV Series online." 
+  title="MoviesNest — Search and Watch Free Movies and TV Series Online" 
   description="Explore, browse, and watch premium-quality movies and TV shows for free. Stream on-demand with no subscription fees, zero ads, and instant streaming player integrations."
 >
   <Navbar client:load />
   
-  <main class="relative z-10 pb-16">
-    {heroItems.length > 0 && <HeroSection items={heroItems} client:load />}
-
-    <div class="mt-8 space-y-4">
-      {/* Top 10 Today Row */}
-      {topTenMovies.length > 0 && (
-        <TopTenGrid items={topTenMovies} title="Top 10 Rated Movies." client:load />
-      )}
-
-      {/* Trending Movies and Series Row (Tab toggled) */}
-      {(trendingMovies.length > 0 || trendingTv.length > 0) && (
-        <TrendingTabs movies={trendingMovies} tv={trendingTv} client:load />
-      )}
-
-      {/* Platform Selective Catalog (Netflix, Prime, Max, etc.) */}
-      {netflixShows.length > 0 && (
-        <PlatformSelector initialItems={netflixShows} client:load />
-      )}
-
-      {/* Browse by Genre Selector */}
-      <GenreRow client:load />
-    </div>
+  <main class="relative z-10 min-h-[calc(100vh-160px)] mesh-gradient-bg">
+    <SleekSearchPage client:load />
   </main>
 
   <Footer />

@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import VidkingPlayer from '../../../../../components/player/VidkingPlayer';
+import { getTVShow, getTVSeason, imgUrl } from '../../../../../lib/tmdb';
+
+const { id, season, episode } = Astro.params;
+
+let show = null;
+let seasonData = null;
+try {
+  show = await getTVShow(id!);
+  seasonData = await getTVSeason(id!, season!);
+} catch (e) {
+  console.error(`Error fetching TV show data for player ${id}:`, e);
+}
+
+if (!show || !show.id || !seasonData) {
+  return new Response("TV Show or Season not found", { status: 404 });
+}
+
+const currentEpisodeData = (seasonData.episodes || []).find(
+  (e: any) => e.episode_number === Number(episode)
+);
+
+const showTitle = show.name || 'Watch TV Show';
+const episodeName = currentEpisodeData?.name || `Episode ${episode}`;
+const poster = show.poster_path ? imgUrl(show.poster_path, 'w342') : '';
+
+// Compute Next Episode Link
+let nextEpisodeUrl = null;
+const nextEpNum = Number(episode) + 1;
+const hasNextEpInSeason = (seasonData.episodes || []).some(
+  (e: any) => e.episode_number === nextEpNum
+);
+
+if (hasNextEpInSeason) {
+  nextEpisodeUrl = `/play/tv/${id}/${season}/${nextEpNum}`;
+} else {
+  const nextSeasonNum = Number(season) + 1;
+  const hasNextSeason = (show.seasons || []).some(
+    (s: any) => s.season_number === nextSeasonNum
+  );
+  if (hasNextSeason) {
+    nextEpisodeUrl = `/play/tv/${id}/${nextSeasonNum}/1`;
+  }
+}
+---
+
+<BaseLayout title={`Streaming: ${showTitle} — S${season} E${episode}`} cinemaMode={true}>
+  <main class="fixed inset-0 w-screen h-screen bg-black overflow-hidden z-[9999]">
+    <VidkingPlayer
+      type="tv"
+      tmdbId={id!}
+      season={Number(season)}
+      episode={Number(episode)}
+      autoPlay={true}
+      title={showTitle}
+      episodeName={episodeName}
+      posterUrl={poster}
+      onNextEpisode={nextEpisodeUrl ? () => {
+        window.location.href = nextEpisodeUrl;
+      } : undefined}
+      onClose={() => {
+        window.location.href = `/tv/${id}`;
+      }}
+      client:load
+    />
+  </main>
+</BaseLayout>

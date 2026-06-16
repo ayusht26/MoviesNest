@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
+import { getPerson, img } from '../../lib/tmdb';
+
+const { id } = Astro.params;
+let person: any = null;
+
+try {
+  person = await getPerson(id!);
+} catch {}
+
+if (!person || !person.id) {
+  return new Response('Person not found', { status: 404 });
+}
+
+const photoUrl = person.profile_path
+  ? `https://image.tmdb.org/t/p/w500${person.profile_path}`
+  : '/placeholder-person.jpg';
+
+const credits = person.combined_credits?.cast || [];
+const knownFor = credits
+  .filter((c: any) => c.poster_path)
+  .sort((a: any, b: any) => (b.vote_count || 0) - (a.vote_count || 0))
+  .slice(0, 20);
+---
+
+<BaseLayout title={`${person.name} — MoviesNest`} description={person.biography?.slice(0, 200)}>
+  <Navbar client:load />
+
+  <main class="max-w-7xl mx-auto px-4 pt-24 pb-16 min-h-screen">
+    <div class="flex flex-col md:flex-row gap-8 mb-12">
+      <div class="w-[200px] flex-shrink-0">
+        <div class="aspect-[2/3] rounded-lg overflow-hidden bg-[#1f1f1f]">
+          <img src={photoUrl} alt={person.name} class="w-full h-full object-cover" />
+        </div>
+      </div>
+      <div class="flex-1 space-y-4">
+        <h1 class="text-3xl font-bold text-white">{person.name}</h1>
+
+        {person.known_for_department && (
+          <p class="text-sm text-gray-500">{person.known_for_department}</p>
+        )}
+
+        {person.birthday && (
+          <p class="text-sm text-gray-500">
+            <span class="text-gray-400">Born:</span> {person.birthday}
+            {person.place_of_birth && ` in ${person.place_of_birth}`}
+          </p>
+        )}
+
+        {person.deathday && (
+          <p class="text-sm text-gray-500">
+            <span class="text-gray-400">Died:</span> {person.deathday}
+          </p>
+        )}
+
+        {person.biography && (
+          <div class="text-sm text-gray-400 leading-relaxed max-w-3xl">
+            {person.biography.split('\n\n').map((p: string, i: number) => (
+              <p key={i} class="mb-3">{p}</p>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+
+    {knownFor.length > 0 && (
+      <div class="space-y-4">
+        <h2 class="text-xl font-semibold text-white">Known For</h2>
+        <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-4">
+          {knownFor.map((credit: any) => (
+            <a
+              key={`${credit.id}-${credit.media_type}`}
+              href={`/${credit.media_type}/${credit.id}`}
+              class="flex-shrink-0 w-[140px] group"
+            >
+              <div class="aspect-[2/3] rounded-lg overflow-hidden bg-[#1f1f1f] mb-2">
+                <img
+                  src={`https://image.tmdb.org/t/p/w342${credit.poster_path}`}
+                  alt={credit.title || credit.name}
+                  loading="lazy"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <p class="text-sm text-white font-medium truncate">{credit.title || credit.name}</p>
+              <p class="text-xs text-gray-500">{credit.character || credit.media_type}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </main>
+
+  <Footer />
+</BaseLayout>

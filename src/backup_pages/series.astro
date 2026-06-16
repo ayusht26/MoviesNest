@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
+import { getPopularTV, getTVGenres } from '../lib/tmdb';
+
+const page = Number(Astro.url.searchParams.get('page')) || 1;
+const genre = Astro.url.searchParams.get('genre') || '';
+
+let shows: any = { results: [] };
+let genres: any = { genres: [] };
+
+try {
+  shows = await getPopularTV(page);
+  genres = await getTVGenres();
+} catch {}
+---
+
+<BaseLayout title="TV Series — MoviesNest" description="Browse popular TV series.">
+  <Navbar client:load />
+
+  <main class="max-w-7xl mx-auto px-4 pt-24 pb-16 min-h-screen">
+    <h1 class="text-2xl font-bold text-white mb-6">TV Series</h1>
+
+    <div class="flex flex-wrap gap-2 mb-8">
+      <a
+        href="/series"
+        class={`px-4 py-1.5 rounded-full text-xs font-medium transition-all border ${
+          !genre ? 'bg-cyan-400 text-black border-cyan-400' : 'bg-transparent text-gray-400 border-gray-700 hover:text-white'
+        }`}
+      >
+        All
+      </a>
+      {(genres?.genres || []).map((g: any) => (
+        <a
+          key={g.id}
+          href={`/series?genre=${g.id}`}
+          class={`px-4 py-1.5 rounded-full text-xs font-medium transition-all border ${
+            genre === String(g.id) ? 'bg-cyan-400 text-black border-cyan-400' : 'bg-transparent text-gray-400 border-gray-700 hover:text-white'
+          }`}
+        >
+          {g.name}
+        </a>
+      ))}
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {(shows?.results || []).map((s: any) => (
+        <a key={s.id} href={`/tv/${s.id}`} class="block group">
+          <div class="aspect-[2/3] rounded-lg overflow-hidden bg-[#1f1f1f] mb-2">
+            {s.poster_path ? (
+              <img src={`https://image.tmdb.org/t/p/w500${s.poster_path}`} alt={s.name} loading="lazy" class="w-full h-full object-cover" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center text-gray-600 text-xs">No poster</div>
+            )}
+          </div>
+          <p class="text-sm text-white font-medium truncate">{s.name}</p>
+          <div class="flex items-center gap-1 text-xs text-gray-500">
+            <span class="text-yellow-400">&#9733;</span>
+            <span>{s.vote_average?.toFixed(1)}</span>
+            {s.first_air_date && <span>• {s.first_air_date.slice(0, 4)}</span>}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    {(shows?.total_pages || 0) > 1 && (
+      <div class="flex justify-center gap-2 mt-8">
+        {page > 1 && (
+          <a href={`/series?page=${page - 1}${genre ? `&genre=${genre}` : ''}`}
+            class="px-4 py-2 rounded-lg text-sm bg-[#1f1f1f] text-white border border-[#2a2a2a] hover:bg-[#2a2a2a]">
+            Previous
+          </a>
+        )}
+        {page < (shows?.total_pages || 1) && page < 500 && (
+          <a href={`/series?page=${page + 1}${genre ? `&genre=${genre}` : ''}`}
+            class="px-4 py-2 rounded-lg text-sm bg-[#1f1f1f] text-white border border-[#2a2a2a] hover:bg-[#2a2a2a]">
+            Next
+          </a>
+        )}
+      </div>
+    )}
+  </main>
+
+  <Footer />
+</BaseLayout>

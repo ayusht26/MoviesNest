@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/layout/Navbar';
+import Footer from '../components/layout/Footer';
+import { getPopularMovies, getMovieGenres } from '../lib/tmdb';
+
+const page = Number(Astro.url.searchParams.get('page')) || 1;
+const genre = Astro.url.searchParams.get('genre') || '';
+const year = Astro.url.searchParams.get('year') || '';
+
+let movies: any = { results: [] };
+let genres: any = { genres: [] };
+
+try {
+  const params: Record<string, string> = { page: String(page), sort_by: 'popularity.desc' };
+  if (genre) params.with_genres = genre;
+  if (year) params.year = year;
+  movies = await getPopularMovies(page);
+  genres = await getMovieGenres();
+} catch {}
+---
+
+<BaseLayout title="Movies — MoviesNest" description="Browse popular movies.">
+  <Navbar client:load />
+
+  <main class="max-w-7xl mx-auto px-4 pt-24 pb-16 min-h-screen">
+    <h1 class="text-2xl font-bold text-white mb-6">Movies</h1>
+
+    <div class="flex flex-wrap gap-2 mb-8">
+      <a
+        href="/movies"
+        class={`px-4 py-1.5 rounded-full text-xs font-medium transition-all border ${
+          !genre ? 'bg-cyan-400 text-black border-cyan-400' : 'bg-transparent text-gray-400 border-gray-700 hover:text-white'
+        }`}
+      >
+        All
+      </a>
+      {(genres?.genres || []).map((g: any) => (
+        <a
+          key={g.id}
+          href={`/movies?genre=${g.id}`}
+          class={`px-4 py-1.5 rounded-full text-xs font-medium transition-all border ${
+            genre === String(g.id) ? 'bg-cyan-400 text-black border-cyan-400' : 'bg-transparent text-gray-400 border-gray-700 hover:text-white'
+          }`}
+        >
+          {g.name}
+        </a>
+      ))}
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {(movies?.results || []).map((m: any) => (
+        <a key={m.id} href={`/movie/${m.id}`} class="block group">
+          <div class="aspect-[2/3] rounded-lg overflow-hidden bg-[#1f1f1f] mb-2">
+            {m.poster_path ? (
+              <img src={`https://image.tmdb.org/t/p/w500${m.poster_path}`} alt={m.title} loading="lazy" class="w-full h-full object-cover" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center text-gray-600 text-xs">No poster</div>
+            )}
+          </div>
+          <p class="text-sm text-white font-medium truncate">{m.title}</p>
+          <div class="flex items-center gap-1 text-xs text-gray-500">
+            <span class="text-yellow-400">&#9733;</span>
+            <span>{m.vote_average?.toFixed(1)}</span>
+            {m.release_date && <span>• {m.release_date.slice(0, 4)}</span>}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    {(movies?.total_pages || 0) > 1 && (
+      <div class="flex justify-center gap-2 mt-8">
+        {page > 1 && (
+          <a href={`/movies?page=${page - 1}${genre ? `&genre=${genre}` : ''}`}
+            class="px-4 py-2 rounded-lg text-sm bg-[#1f1f1f] text-white border border-[#2a2a2a] hover:bg-[#2a2a2a]">
+            Previous
+          </a>
+        )}
+        {page < (movies?.total_pages || 1) && page < 500 && (
+          <a href={`/movies?page=${page + 1}${genre ? `&genre=${genre}` : ''}`}
+            class="px-4 py-2 rounded-lg text-sm bg-[#1f1f1f] text-white border border-[#2a2a2a] hover:bg-[#2a2a2a]">
+            Next
+          </a>
+        )}
+      </div>
+    )}
+  </main>
+
+  <Footer />
+</BaseLayout>

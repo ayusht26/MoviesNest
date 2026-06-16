@@ -38,6 +38,61 @@ const MOCK_GENRES = [
 
 const MOCK_ITEMS = [
   {
+    id: 1084244,
+    title: 'Toy Story 5',
+    overview: 'When Bonnie receives a Lilypad tablet as a gift and becomes obsessed, Buzz, Woody, Jessie and the rest of the gang\'s jobs become exponentially harder when they have to go head to head with the all-new threat to playtime.',
+    backdrop_path: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop',
+    poster_path: 'https://images.unsplash.com/photo-1618336753974-aae8e04506aa?q=80&w=500&auto=format&fit=crop',
+    vote_average: 7.6,
+    release_date: '2026-06-17',
+    media_type: 'movie',
+    genre_ids: [16, 10751, 35, 12]
+  },
+  {
+    id: 124364,
+    name: 'FROM',
+    overview: 'Unravel the mystery of a nightmarish town in middle America that traps all those who enter. As the unwilling residents fight to keep a sense of normalcy and search for a way out, they must also survive the threats of the surrounding forest – including the terrifying creatures that come out when the sun goes down.',
+    backdrop_path: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1200&auto=format&fit=crop',
+    poster_path: 'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?q=80&w=500&auto=format&fit=crop',
+    vote_average: 8.5,
+    first_air_date: '2022-02-20',
+    media_type: 'tv',
+    genre_ids: [9648, 18, 27]
+  },
+  {
+    id: 936075,
+    title: 'Michael',
+    overview: 'The story of Michael Jackson, one of the most influential artists the world has ever known, and his life beyond the music. His journey from the discovery of his extraordinary talent as the lead of the Jackson Five, to the visionary artist whose creative ambition fueled a relentless pursuit to become the biggest entertainer in the world, highlighting both his life off-stage and some of the most iconic performances from his solo career.',
+    backdrop_path: 'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?q=80&w=1200&auto=format&fit=crop',
+    poster_path: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=500&auto=format&fit=crop',
+    vote_average: 8.6,
+    release_date: '2026-04-22',
+    media_type: 'movie',
+    genre_ids: [10402, 18]
+  },
+  {
+    id: 220102,
+    name: 'Spider-Noir',
+    overview: 'Ben Reilly, an aging and down on his luck private investigator in 1930s New York, is forced to grapple with his past life as the city\'s one and only superhero.',
+    backdrop_path: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1200&auto=format&fit=crop',
+    poster_path: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=500&auto=format&fit=crop',
+    vote_average: 8.6,
+    first_air_date: '2026-05-25',
+    media_type: 'tv',
+    genre_ids: [18, 9648, 28]
+  },
+  {
+    id: 37854,
+    name: 'One Piece',
+    overview: 'Years ago, the fearsome Pirate King, Gol D. Roger was executed leaving a huge pile of treasure and the famous "One Piece" behind. Whoever claims the "One Piece" will be named the new King of the Pirates. Monkey D. Luffy, a boy who consumed a "Devil Fruit," decides to find the One Piece and become King of the Pirates!',
+    backdrop_path: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop',
+    poster_path: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=500&auto=format&fit=crop',
+    vote_average: 8.7,
+    first_air_date: '1999-10-20',
+    media_type: 'tv',
+    genre_ids: [10759, 35, 14]
+  },
+  {
     id: 299534,
     title: 'Avengers: Endgame',
     overview: 'After the devastating events of Avengers: Infinity War, the universe is in ruins. With the help of remaining allies, the Avengers assemble once more in order to reverse Thanos\' actions and restore balance to the universe.',
@@ -104,6 +159,39 @@ const MOCK_ITEMS = [
     genre_ids: [18, 9648]
   },
   {
+    id: 60625,
+    name: 'Rick and Morty',
+    overview: 'Follows a sociopathic genius scientist who drags his inherently timid grandson on adventures across the universe.',
+    backdrop_path: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&auto=format&fit=crop',
+    poster_path: 'https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?q=80&w=500&auto=format&fit=crop',
+    vote_average: 8.7,
+    first_air_date: '2013-12-02',
+    media_type: 'tv',
+    genre_ids: [16, 35, 878]
+  },
+  {
+    id: 76479,
+    name: 'The Boys',
+    overview: 'A group of vigilantes known informally as “The Boys” set out to take down corrupt superheroes with no more than blue-collar grit and a willingness to fight dirty.',
+    backdrop_path: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=1200&auto=format&fit=crop',
+    poster_path: 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=500&auto=format&fit=crop',
+    vote_average: 8.5,
+    first_air_date: '2019-07-25',
+    media_type: 'tv',
+    genre_ids: [10765, 10759, 18]
+  },
+  {
+    id: 1273221,
+    title: 'Scary Movie',
+    overview: 'Twenty-six years after outrunning a suspiciously familiar masked killer, the Core Four are back in the killer\'s crosshairs and no horror movie IP is safe.',
+    backdrop_path: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1200&auto=format&fit=crop',
+    poster_path: 'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?q=80&w=500&auto=format&fit=crop',
+    vote_average: 5.6,
+    release_date: '2026-06-03',
+    media_type: 'movie',
+    genre_ids: [35, 27]
+  },
+  {
     id: 60735,
     name: 'The Flash',
     overview: 'After a particle accelerator causes a freak storm, CSI Investigator Barry Allen is struck by lightning and falls into a coma. Months later he awakens with the power of super speed.',
@@ -127,6 +215,10 @@ const hasAuth = () => {
 export let isRateLimited = false;
 export let isAuthError = false;
 
+// Server-side cache for TMDB responses
+const tmdbCache = new Map<string, { data: any; expiresAt: number }>();
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
 export function getTMDBStatus() {
   return {
     isRateLimited,
@@ -137,9 +229,18 @@ export function getTMDBStatus() {
 }
 
 async function tmdb(endpoint: string, params: Record<string,string> = {}): Promise<any> {
+  // 1. Build cache key and check cache
+  const cacheKey = `${endpoint}?${new URLSearchParams(params).toString()}`;
+  const cached = tmdbCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.data;
+  }
+
+  // 2. If no auth is present, fallback directly to mock
   if (!hasAuth()) {
     console.warn(`[TMDB API] Neither PUBLIC_TMDB_KEY nor PUBLIC_TMDB_TOKEN is configured. Using fallback mock data.`);
-    return getMockResponse(endpoint, params);
+    const mockData = getMockResponse(endpoint, params);
+    return mockData;
   }
 
   const url = new URL(`${BASE}${endpoint}`);
@@ -173,7 +274,13 @@ async function tmdb(endpoint: string, params: Record<string,string> = {}): Promi
       }
       return getMockResponse(endpoint, params);
     }
-    return res.json();
+    
+    const data = await res.json();
+    // Cache the successful response
+    if (data && !data.__blocked) {
+      tmdbCache.set(cacheKey, { data, expiresAt: Date.now() + CACHE_TTL });
+    }
+    return data;
   } catch (err: any) {
     const isNetworkError =
       err?.code === 'ETIMEDOUT' ||
@@ -183,10 +290,8 @@ async function tmdb(endpoint: string, params: Record<string,string> = {}): Promi
       err?.message?.includes('connect timeout');
     
     if (isNetworkError) {
-      // Return empty stub so Astro pages don't crash — they render empty rows
-      // The client-side VPN banner (Issue 3B) will catch remaining failures
-      console.warn(`TMDB blocked (ISP): ${endpoint}`);
-      return { results: [], total_results: 0, __blocked: true };
+      console.warn(`TMDB blocked (ISP) or offline: ${endpoint}. Falling back to mock database search.`);
+      return getMockResponse(endpoint, params);
     }
     
     console.error(`TMDB fetch failed:`, err);

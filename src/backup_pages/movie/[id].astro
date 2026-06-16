@@ -11,7 +11,7 @@ const { id } = Astro.params;
 
 let movie = null;
 try {
-  movie = await getMovie(id!);
+  movie = await getMovie(id);
 } catch (e) {
   console.error(`Error fetching movie ${id}:`, e);
 }
@@ -38,9 +38,8 @@ const similar = movie.similar?.results || [];
   <Navbar client:load cinemaMode={true} />
   
   <div class="relative z-10 cinema-dark min-h-screen">
-    {/* Detail Hero Section with In-place Player */}
+    {/* Detail Hero Section */}
     <DetailHero
-      tmdbId={id!}
       title={title}
       backdrop_path={backdrop}
       poster_path={poster}
@@ -51,6 +50,7 @@ const similar = movie.similar?.results || [];
       runtime={runtime}
       tagline={tagline}
       media_type="movie"
+      playUrl={`/play/movie/${id}`}
       client:load
     />
 
