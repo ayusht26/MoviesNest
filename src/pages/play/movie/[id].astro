@@ -21,7 +21,7 @@ const poster = movie.poster_path ? imgUrl(movie.poster_path, 'w342') : '';
 ---
 
 <BaseLayout title={`Streaming: ${title}`} cinemaMode={true}>
-  <main class="fixed inset-0 w-screen h-screen bg-black overflow-hidden z-[9999]">
+  <main class="fixed inset-0 w-full h-[100dvh] bg-black overflow-hidden z-[9999]">
     <VidkingPlayer
       type="movie"
       tmdbId={id!}

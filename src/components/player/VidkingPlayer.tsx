@@ -148,7 +148,7 @@ export default function VidkingPlayer(props: Props) {
   const isExitVisible = showExit || paused || loading;
 
   return (
-    <div className="fixed inset-0 w-screen h-screen bg-black z-[9999] flex flex-col justify-center items-center overflow-hidden animate-fade-up">
+    <div className="fixed inset-0 w-full h-[100dvh] bg-black z-[9999] flex flex-col justify-center items-center overflow-hidden animate-fade-up">
       {/* Loading state */}
       {loading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black z-20 gap-4">

@@ -47,7 +47,7 @@ if (hasNextEpInSeason) {
 ---
 
 <BaseLayout title={`Streaming: ${showTitle} — S${season} E${episode}`} cinemaMode={true}>
-  <main class="fixed inset-0 w-screen h-screen bg-black overflow-hidden z-[9999]">
+  <main class="fixed inset-0 w-full h-[100dvh] bg-black overflow-hidden z-[9999]">
     <VidkingPlayer
       type="tv"
       tmdbId={id!}
