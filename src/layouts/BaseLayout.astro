@@ -13,7 +13,7 @@ const tmdbKey = import.meta.env.PUBLIC_TMDB_KEY || 'test';
 const tmdbStatus = getTMDBStatus();
 ---
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,30 +30,12 @@ const tmdbStatus = getTMDBStatus();
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   
-  <script is:inline define:vars={{ cinemaMode }}>
-    (() => {
-      if (cinemaMode) {
-        document.documentElement.classList.add('dark');
-        return;
-      }
-      const theme = (() => {
-        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-          return localStorage.getItem('theme');
-        }
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          return 'dark';
-        }
-        return 'light';
-      })();
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    })();
+  <script is:inline>
+    // Always enforce dark theme
+    document.documentElement.classList.add('dark');
   </script>
 </head>
-<body class={`min-h-screen bg-canvas-soft text-ink transition-colors duration-300 ${cinemaMode ? 'cinema-dark dark' : ''}`}>
+<body class={`min-h-screen bg-canvas-soft text-ink transition-colors duration-300 ${cinemaMode ? 'cinema-dark dark' : 'dark'}`}>
   <slot />
 
   <!-- VPN Block Warning Banner -->

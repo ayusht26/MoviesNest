@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Search, Film, Menu, X, Play, Sun, Moon } from 'lucide-react';
+import { Search, Home } from 'lucide-react';
 import SearchModal from '../search/SearchModal';
 
 interface Props {
@@ -41,32 +41,12 @@ const POPULAR_MEDIA = [
 export default function Navbar({ cinemaMode = false }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
-
-  // Initialize theme state from html class
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    setTheme(isDark ? 'dark' : 'light');
-  }, []);
-
-  const toggleTheme = () => {
-    const nextTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(nextTheme);
-    if (nextTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
 
   // Keyboard shortcut listener for search modal
   useEffect(() => {
@@ -86,17 +66,11 @@ export default function Navbar({ cinemaMode = false }: Props) {
     window.location.href = `/${randomItem.type}/${randomItem.id}`;
   };
 
-  const isDarkModeActive = cinemaMode || theme === 'dark';
+  const isDarkModeActive = true;
 
-  const bgStyle = isDarkModeActive
-    ? (scrolled ? 'bg-[#0a0a0a]/95 border-b border-[#262626]' : 'bg-transparent')
-    : (scrolled ? 'bg-white/95 border-b border-hairline' : 'bg-transparent');
-
-  const textStyle = isDarkModeActive ? 'text-white' : 'text-ink';
-  const muteStyle = isDarkModeActive ? 'text-gray-400 hover:text-white' : 'text-body hover:text-ink';
-  const buttonStyle = isDarkModeActive
-    ? 'bg-white text-black hover:bg-gray-100'
-    : 'bg-primary text-white hover:bg-neutral-800';
+  const bgStyle = scrolled ? 'bg-[#0a0a0a]/95 border-b border-[#262626]' : 'bg-transparent';
+  const textStyle = 'text-white';
+  const buttonStyle = 'bg-white text-black hover:bg-gray-100';
 
   return (
     <>
@@ -105,35 +79,29 @@ export default function Navbar({ cinemaMode = false }: Props) {
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo - Redesigned to use Bebas Neue with custom gradient film brand icon */}
-            <a href="/" className="flex items-center gap-2 group select-none">
-              <div className="w-7 h-7 rounded bg-gradient-to-tr from-link via-violet to-highlight-pink flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
-                <Film className="w-3.5 h-3.5 text-white fill-current" />
-              </div>
-              <span className={`font-display text-2.5xl font-black tracking-wider uppercase transition-colors duration-200 ${textStyle}`}>
-                MOVIES<span className="text-link dark:text-cyan">NEST</span>
+            {/* Logo - Typographic-only styled with Bebas Neue / Impact stack */}
+            <a href="/" className="flex items-center group select-none">
+              <span className={`font-display text-2xl sm:text-3xl font-black tracking-widest uppercase transition-colors duration-200 ${textStyle} group-hover:text-[#3860be]`}>
+                MOVIES<span className="text-[#3cffd0] transition-colors duration-200 group-hover:text-[#3860be]">NEST</span>
               </span>
             </a>
 
-            {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-1">
-              {[
-                { href: '/', label: 'Home' },
-                { href: '/?type=movie', label: 'Movies' },
-                { href: '/?type=tv', label: 'TV Shows' },
-              ].map(link => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${muteStyle}`}
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-
             {/* Right actions */}
             <div className="flex items-center gap-3">
+              {/* Home Icon Link */}
+              <a
+                href="/"
+                className={`p-2 rounded-md transition-all duration-200 hover:scale-105 ${
+                  isDarkModeActive
+                    ? 'text-gray-400 hover:text-white hover:bg-neutral-900'
+                    : 'text-mute hover:text-ink hover:bg-canvas-soft-2'
+                }`}
+                title="Home"
+                aria-label="Home"
+              >
+                <Home className="w-4 h-4" />
+              </a>
+
               <button
                 onClick={() => setSearchOpen(true)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-md border text-xs transition-all duration-200 ${
@@ -144,11 +112,7 @@ export default function Navbar({ cinemaMode = false }: Props) {
               >
                 <Search className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Search Catalogue...</span>
-                <kbd className={`hidden lg:inline-flex items-center justify-center ml-1 px-1.5 py-0.5 rounded border font-mono text-[9px] select-none ${
-                  isDarkModeActive
-                    ? 'bg-neutral-800 border-neutral-700 text-gray-300'
-                    : 'bg-neutral-100 border-neutral-200 text-gray-500'
-                }`}>⌘K</kbd>
+                <kbd className="hidden lg:inline-flex items-center justify-center ml-1 px-1.5 py-0.5 rounded border font-mono text-[9px] select-none bg-neutral-800 border-neutral-700 text-gray-300">⌘K</kbd>
               </button>
 
               <a
@@ -158,60 +122,9 @@ export default function Navbar({ cinemaMode = false }: Props) {
               >
                 Watch Random
               </a>
-
-              {/* Theme Toggle Button */}
-              {!cinemaMode && (
-                <button
-                  onClick={toggleTheme}
-                  className={`p-2 rounded-full border transition-all duration-200 cursor-pointer ${
-                    theme === 'dark'
-                      ? 'bg-neutral-900 border-neutral-800 text-yellow-400 hover:text-yellow-300 hover:bg-neutral-800'
-                      : 'bg-canvas-soft border-hairline text-body hover:text-ink hover:bg-canvas-soft-2'
-                  }`}
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? <Sun className="w-4 h-4 animate-pulse-glow" /> : <Moon className="w-4 h-4" />}
-                </button>
-              )}
-
-              {/* Mobile menu toggle */}
-              <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className={`md:hidden p-1.5 rounded-md border transition-colors ${
-                  isDarkModeActive
-                    ? 'border-neutral-800 text-gray-400 hover:text-white'
-                    : 'border-hairline text-mute hover:text-ink'
-                }`}
-              >
-                {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              </button>
             </div>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {mobileOpen && (
-          <div className={`md:hidden border-t ${isDarkModeActive ? 'border-neutral-800 bg-[#0a0a0a]' : 'border-hairline bg-white'}`}>
-            <div className="px-4 py-3 flex flex-col gap-1">
-              {[
-                { href: '/', label: 'Home' },
-                { href: '/?type=movie', label: 'Movies' },
-                { href: '/?type=tv', label: 'TV Shows' },
-              ].map(item => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`px-3 py-2.5 rounded-md text-sm font-medium transition-all ${
-                    isDarkModeActive ? 'text-gray-300 hover:text-white hover:bg-neutral-900' : 'text-body hover:text-ink hover:bg-canvas-soft-2'
-                  }`}
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
       </nav>
 
       {/* Search Modal */}
