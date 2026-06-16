@@ -27,7 +27,7 @@ export default function HeroSection({ items }: Props) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const timerRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
   // Star-field canvas (keep existing logic unchanged)
   useEffect(() => {
@@ -87,14 +87,14 @@ export default function HeroSection({ items }: Props) {
   const type = item.media_type === 'tv' ? 'tv' : 'movie';
   const href = `/${type}/${item.id}`;
 
-  const slideVariants = {
+  const slideVariants: any = {
     enter: (dir: number) => ({ opacity: 0, x: dir > 0 ? 60 : -60 }),
     center: { opacity: 1, x: 0, transition: { duration: 0.55, ease: [0.25, 0.1, 0.25, 1] } },
     exit: (dir: number) => ({ opacity: 0, x: dir > 0 ? -60 : 60, transition: { duration: 0.35 } }),
   };
 
   return (
-    <div className="relative w-full h-[85vh] min-h-[600px] overflow-hidden select-none">
+    <div className="dark cinema-dark bg-[#0a0a0a] text-white relative w-full h-[85vh] min-h-[600px] overflow-hidden select-none">
       {/* Star field */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-60 z-0" />
 

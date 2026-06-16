@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Play, Calendar } from 'lucide-react';
 import { imgUrl } from '../../lib/tmdb';
@@ -19,8 +19,15 @@ interface Props {
 export default function TopTenCard({ rank, id, title, poster_path, vote_average, media_type = 'movie', release_date, first_air_date }: Props) {
   const [hovered, setHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
   const href = `/${media_type}/${id}`;
   const year = (release_date || first_air_date || '').slice(0, 4);
+
+  useEffect(() => {
+    if (imgRef.current?.complete) {
+      setIsLoaded(true);
+    }
+  }, []);
 
   // Format rank number to 2 digits: e.g., 01, 02...
   const formattedRank = String(rank).padStart(2, '0');
@@ -45,6 +52,7 @@ export default function TopTenCard({ rank, id, title, poster_path, vote_average,
           <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
         )}
         <img
+          ref={imgRef}
           src={poster_path ? imgUrl(poster_path, 'w342') : '/placeholder.jpg'}
           alt={title}
           onLoad={() => setIsLoaded(true)}
@@ -52,6 +60,11 @@ export default function TopTenCard({ rank, id, title, poster_path, vote_average,
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           loading="lazy"
+          onError={(e) => {
+            setIsLoaded(true);
+            (e.target as HTMLImageElement).src = '/placeholder.jpg';
+          }}
+          draggable={false}
         />
 
         {/* Hover play overlay */}

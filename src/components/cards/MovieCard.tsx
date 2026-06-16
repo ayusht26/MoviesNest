@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Play, Calendar } from 'lucide-react';
 import { imgUrl } from '../../lib/tmdb';
@@ -18,8 +18,15 @@ interface Props {
 export default function MovieCard({ id, title, poster_path, vote_average, release_date, first_air_date, media_type = 'movie' }: Props) {
   const [hovered, setHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
   const href = `/${media_type}/${id}`;
   const year = (release_date || first_air_date || '').slice(0, 4);
+
+  useEffect(() => {
+    if (imgRef.current?.complete) {
+      setIsLoaded(true);
+    }
+  }, []);
 
   return (
     <motion.a
@@ -36,6 +43,7 @@ export default function MovieCard({ id, title, poster_path, vote_average, releas
           <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
         )}
         <img
+          ref={imgRef}
           src={poster_path ? imgUrl(poster_path, 'w342') : '/placeholder.jpg'}
           alt={title}
           onLoad={() => setIsLoaded(true)}

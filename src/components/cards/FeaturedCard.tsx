@@ -36,6 +36,10 @@ export default function FeaturedCard({ id, title, backdrop_path, vote_average, r
           alt={title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/placeholder.jpg';
+          }}
+          draggable={false}
         />
 
         {/* Gradient vignette overlay */}
