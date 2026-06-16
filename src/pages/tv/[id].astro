@@ -59,7 +59,7 @@ const seasons = show.seasons || [];
 
     {/* TV Player Section with Episode Selector */}
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-      <TVPlayerSection showId={Number(id)} seasons={seasons} showTitle={title} client:load />
+      <TVPlayerSection showId={Number(id)} seasons={seasons} showTitle={title} backdropUrl={backdrop} client:load />
     </div>
 
     {/* Cast & Recommendations */}

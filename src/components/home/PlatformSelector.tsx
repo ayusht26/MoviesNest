@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, Film, Loader2 } from 'lucide-react';
 import { getDiscoverByNetwork, NETWORKS } from '../../lib/tmdb';
 import MovieCard from '../cards/MovieCard';
+import NetworkLogo from '../ui/NetworkLogo';
+import ScrollRowWrapper from '../ui/ScrollRowWrapper';
 
 interface Movie {
   id: number;
@@ -44,15 +46,19 @@ export default function PlatformSelector({ initialItems }: Props) {
     <section className="relative py-8">
       {/* Header with trigger dropdown */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <span className="font-mono text-[10px] uppercase tracking-widest text-link font-semibold mb-1 block">
-          / Networks
+        <span className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-link dark:text-cyan mb-1 block">
+          NETWORK CATALOGS
         </span>
         <div className="relative inline-block">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center gap-2 text-2xl sm:text-3xl font-semibold tracking-tight text-ink hover:text-link transition-colors focus:outline-none"
+            className="flex items-center gap-2.5 text-2xl sm:text-3xl font-semibold tracking-tight text-ink dark:text-white hover:text-link dark:hover:text-cyan transition-colors focus:outline-none cursor-pointer"
           >
-            Only on <span className="underline decoration-link/40 decoration-wavy underline-offset-4">{activeNetwork.name}</span>
+            Only on{" "}
+            <span className="inline-flex items-center gap-2 underline decoration-link/40 dark:decoration-cyan/40 decoration-wavy underline-offset-4">
+              <NetworkLogo networkId={activeNetwork.id} className="w-7 h-7 object-contain" />
+              {activeNetwork.name}
+            </span>
             <ChevronDown className="w-5 h-5 text-mute" />
           </button>
 
@@ -69,24 +75,16 @@ export default function PlatformSelector({ initialItems }: Props) {
                     <button
                       key={network.id}
                       onClick={() => handleSelectNetwork(network)}
-                      className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors text-left ${
+                      className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors text-left cursor-pointer ${
                         isSelected 
-                          ? 'bg-canvas-soft-2 text-ink font-semibold' 
+                          ? 'bg-canvas-soft-2 text-ink dark:text-white font-semibold' 
                           : 'text-body hover:bg-canvas-soft-2 hover:text-ink'
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        <span 
-                          className="w-2.5 h-2.5 rounded-full flex-shrink-0" 
-                          style={{ backgroundColor: network.color }}
-                        />
+                        <NetworkLogo networkId={network.id} className="w-5 h-5 object-contain" />
                         {network.name}
                       </div>
-                      {isSelected && (
-                        <span className="text-[10px] bg-link/10 text-link px-1.5 py-0.2 rounded font-mono font-bold">
-                          ACTIVE
-                        </span>
-                      )}
                     </button>
                   );
                 })}
@@ -106,7 +104,7 @@ export default function PlatformSelector({ initialItems }: Props) {
             </div>
           </div>
         ) : items.length > 0 ? (
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-6 scroll-smooth">
+          <ScrollRowWrapper>
             {items.map(item => (
               <MovieCard
                 key={item.id}
@@ -119,7 +117,7 @@ export default function PlatformSelector({ initialItems }: Props) {
                 media_type="tv"
               />
             ))}
-          </div>
+          </ScrollRowWrapper>
         ) : (
           <div className="h-[280px] flex items-center justify-center bg-canvas rounded-xl border border-hairline shadow-level-1 text-mute text-sm font-mono">
             No shows found for this platform.

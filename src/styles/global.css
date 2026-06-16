@@ -1,19 +1,21 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *, .cinema-dark, .cinema-dark *));
+
 @theme {
   /* Vercel Design System Primitives */
-  --color-canvas: #ffffff;
-  --color-canvas-soft: #fafafa;
-  --color-canvas-soft-2: #f5f5f5;
-  --color-primary: #171717;
-  --color-on-primary: #ffffff;
-  --color-ink: #171717;
-  --color-body: #4d4d4d;
-  --color-mute: #888888;
-  --color-hairline: #ebebeb;
-  --color-hairline-strong: #a1a1a1;
+  --color-canvas: var(--canvas);
+  --color-canvas-soft: var(--canvas-soft);
+  --color-canvas-soft-2: var(--canvas-soft-2);
+  --color-primary: var(--primary-col);
+  --color-on-primary: var(--on-primary);
+  --color-ink: var(--ink);
+  --color-body: var(--body-col);
+  --color-mute: var(--mute-col);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
   
-  --color-link: #0070f3;
+  --color-link: var(--nest-accent);
   --color-success: #0070f3;
   --color-error: #ee0000;
   --color-warning: #f5a623;
@@ -23,20 +25,21 @@
   --color-highlight-pink: #ff0080;
 
   /* Theme Mapping for MoviesNest Compatibility */
-  --color-nest-bg: var(--color-canvas-soft);
-  --color-nest-surface: var(--color-canvas);
-  --color-nest-border: var(--color-hairline);
-  --color-nest-text: var(--color-ink);
-  --color-nest-muted: var(--color-body);
-  --color-nest-accent: var(--color-link);
-  --color-nest-accentDim: #0056b3;
+  --color-nest-bg: var(--canvas-soft);
+  --color-nest-surface: var(--canvas);
+  --color-nest-border: var(--hairline);
+  --color-nest-text: var(--ink);
+  --color-nest-muted: var(--body-col);
+  --color-nest-accent: var(--nest-accent);
+  --color-nest-accentDim: var(--nest-accent-dim);
   --color-nest-gold: var(--color-warning);
   --color-nest-red: var(--color-error);
-  --color-nest-overlay: rgba(23, 23, 23, 0.4);
+  --color-nest-overlay: var(--nest-overlay);
 
-  --font-display: Geist, Inter, system-ui, -apple-system, sans-serif;
-  --font-body: Geist, Inter, system-ui, -apple-system, sans-serif;
-  --font-mono: Geist Mono, "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+  --font-display: "Bebas Neue", sans-serif;
+  --font-sans: "Space Grotesk", Inter, system-ui, -apple-system, sans-serif;
+  --font-body: Inter, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", Geist Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
 
   --animate-fade-up: fadeUp 0.6s ease forwards;
   --animate-shimmer: shimmer 1.5s infinite;
@@ -72,21 +75,40 @@
 
 :root {
   color-scheme: light;
+  
+  --canvas: #ffffff;
+  --canvas-soft: #fafafa;
+  --canvas-soft-2: #f5f5f5;
+  --primary-col: #171717;
+  --on-primary: #ffffff;
+  --ink: #171717;
+  --body-col: #4d4d4d;
+  --mute-col: #888888;
+  --hairline: #ebebeb;
+  --hairline-strong: #a1a1a1;
+  
+  --nest-accent: #0070f3;
+  --nest-accent-dim: #0056b3;
+  --nest-overlay: rgba(23, 23, 23, 0.4);
 }
 
-/* Cinema dark mode override */
-.cinema-dark {
+.dark, .cinema-dark {
   color-scheme: dark;
-  --color-nest-bg: #0a0a0a;
-  --color-nest-surface: #121212;
-  --color-nest-border: #262626;
-  --color-nest-text: #ffffff;
-  --color-nest-muted: #a3a3a3;
-  --color-nest-accent: #50e3c2; /* Cyan for dark mode accents */
-  --color-nest-accentDim: #29bc9b;
-  --color-nest-overlay: rgba(0, 0, 0, 0.85);
-  background-color: #0a0a0a !important;
-  color: #ffffff !important;
+  
+  --canvas: #0a0a0a;
+  --canvas-soft: #0a0a0a;
+  --canvas-soft-2: #121212;
+  --primary-col: #ffffff;
+  --on-primary: #000000;
+  --ink: #ffffff;
+  --body-col: #a3a3a3;
+  --mute-col: #666666;
+  --hairline: #262626;
+  --hairline-strong: #444444;
+  
+  --nest-accent: #50e3c2; /* Cyan for dark mode */
+  --nest-accent-dim: #29bc9b;
+  --nest-overlay: rgba(0, 0, 0, 0.85);
 }
 
 * {
@@ -98,8 +120,8 @@ html {
 }
 
 body {
-  background-color: var(--color-canvas-soft);
-  color: var(--color-ink);
+  background-color: var(--canvas-soft);
+  color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;

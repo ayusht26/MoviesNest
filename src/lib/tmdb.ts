@@ -123,14 +123,13 @@ const hasAuth = () => {
   return hasKey || hasToken;
 };
 
-async function tmdb(endpoint: string, params: Record<string,string> = {}) {
+async function tmdb(endpoint: string, params: Record<string,string> = {}): Promise<any> {
   if (!hasAuth()) {
     console.warn(`[TMDB API] Neither PUBLIC_TMDB_KEY nor PUBLIC_TMDB_TOKEN is configured. Using fallback mock data.`);
     return getMockResponse(endpoint, params);
   }
 
   const url = new URL(`${BASE}${endpoint}`);
-  
   const headers: Record<string, string> = {
     'Accept': 'application/json'
   };
@@ -142,17 +141,34 @@ async function tmdb(endpoint: string, params: Record<string,string> = {}) {
     url.searchParams.set('api_key', KEY);
   }
 
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   
   try {
-    const res = await fetch(url.toString(), { headers });
+    const res = await fetch(url.toString(), {
+      headers,
+      signal: AbortSignal.timeout(8000), // 8s timeout
+    });
     if (!res.ok) {
       console.warn(`TMDB error status: ${res.status}. Falling back to mock data.`);
       return getMockResponse(endpoint, params);
     }
     return res.json();
-  } catch (error) {
-    console.error(`TMDB fetch failed:`, error);
+  } catch (err: any) {
+    const isNetworkError =
+      err?.code === 'ETIMEDOUT' ||
+      err?.code === 'EACCES' ||
+      err?.cause?.code === 'UND_ERR_CONNECT_TIMEOUT' ||
+      err?.message?.includes('fetch failed') ||
+      err?.message?.includes('connect timeout');
+    
+    if (isNetworkError) {
+      // Return empty stub so Astro pages don't crash — they render empty rows
+      // The client-side VPN banner (Issue 3B) will catch remaining failures
+      console.warn(`TMDB blocked (ISP): ${endpoint}`);
+      return { results: [], total_results: 0, __blocked: true };
+    }
+    
+    console.error(`TMDB fetch failed:`, err);
     return getMockResponse(endpoint, params);
   }
 }

@@ -1,7 +1,9 @@
 'use client';
+import { useState } from 'react';
 import { Play, Calendar, Clock, Film, Tv, Star } from 'lucide-react';
 import { backdropUrl, imgUrl } from '../../lib/tmdb';
 import { formatRuntime } from '../../lib/utils';
+import Skeleton from '../ui/Skeleton';
 
 interface Genre {
   id: number;
@@ -37,6 +39,8 @@ export default function DetailHero({
   media_type,
   onPlayClick,
 }: Props) {
+  const [backdropLoaded, setBackdropLoaded] = useState(false);
+  const [posterLoaded, setPosterLoaded] = useState(false);
   const year = (release_date || first_air_date || '').slice(0, 4);
   const rawTitle = title.endsWith('.') ? title : `${title}.`;
 
@@ -44,10 +48,16 @@ export default function DetailHero({
     <div className="relative w-full min-h-[50vh] lg:h-[65vh] flex items-end overflow-hidden pb-12 pt-28 bg-[#0a0a0a]">
       {/* Backdrop Image */}
       <div className="absolute inset-0">
+        {!backdropLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full rounded-none opacity-20" />
+        )}
         <img
           src={backdrop_path ? backdropUrl(backdrop_path) : '/placeholder.jpg'}
           alt={title}
-          className="w-full h-full object-cover object-top opacity-30"
+          onLoad={() => setBackdropLoaded(true)}
+          className={`w-full h-full object-cover object-top transition-opacity duration-700 ${
+            backdropLoaded ? 'opacity-30' : 'opacity-0'
+          }`}
         />
         {/* Layered Vignette Overlays */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent" />
@@ -57,11 +67,17 @@ export default function DetailHero({
       <div className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-end animate-fade-up">
           {/* Poster Card */}
-          <div className="hidden lg:block w-[220px] aspect-[2/3] rounded-lg overflow-hidden shadow-level-3 border border-neutral-800 flex-shrink-0 group">
+          <div className="hidden lg:block w-[220px] aspect-[2/3] rounded-lg overflow-hidden shadow-level-3 border border-neutral-800 flex-shrink-0 group relative">
+            {!posterLoaded && (
+              <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
+            )}
             <img
               src={poster_path ? imgUrl(poster_path, 'w500') : '/placeholder.jpg'}
               alt={title}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-103"
+              onLoad={() => setPosterLoaded(true)}
+              className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-103 ${
+                posterLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
             />
           </div>
 

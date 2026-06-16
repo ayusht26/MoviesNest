@@ -66,8 +66,8 @@ export default function Footer({ cinemaMode = false }: Props) {
               Made with <Heart className="w-3 h-3 text-red-500 fill-current" /> using Astro &amp; React
             </span>
             <div className="flex gap-4">
-              <a href="#" className={`transition-colors ${linkHoverClass}`}><Github className="w-3.5 h-3.5" /></a>
-              <a href="#" className={`transition-colors ${linkHoverClass}`}><Globe className="w-3.5 h-3.5" /></a>
+              <a href="https://github.com/ayusht26/" target="_blank" rel="noopener noreferrer" className={`transition-colors ${linkHoverClass}`} aria-label="GitHub Developer Profile"><Github className="w-3.5 h-3.5" /></a>
+              <a href="#" className={`transition-colors ${linkHoverClass}`} aria-label="Developer Portfolio Website"><Globe className="w-3.5 h-3.5" /></a>
             </div>
           </div>
         </div>

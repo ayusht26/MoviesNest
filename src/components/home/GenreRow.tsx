@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { getMoviesByGenre } from '../../lib/tmdb';
 import MovieCard from '../cards/MovieCard';
 import { Loader2 } from 'lucide-react';
+import ScrollRowWrapper from '../ui/ScrollRowWrapper';
 
 interface Movie {
   id: number;
@@ -57,10 +58,10 @@ export default function GenreRow() {
       {/* Genre tabs header */}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-6 flex flex-col sm:flex-row sm:items-baseline justify-between gap-4">
         <div>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-link font-semibold mb-1 block">
-            / Filter
+          <span className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-link dark:text-cyan mb-1 block">
+            GENRE DISCOVER
           </span>
-          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-ink">
+          <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-ink dark:text-white">
             Browse by genre.
           </h2>
         </div>
@@ -73,10 +74,10 @@ export default function GenreRow() {
               <button
                 key={genre.id}
                 onClick={() => setSelectedGenre(genre.id)}
-                className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border shadow-sm ${
+                className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border shadow-sm cursor-pointer ${
                   isSelected
-                    ? 'bg-primary border-primary text-white'
-                    : 'bg-canvas text-body hover:text-ink border-hairline hover:bg-canvas-soft'
+                    ? 'bg-primary border-primary text-white dark:bg-white dark:border-white dark:text-black'
+                    : 'bg-canvas text-body hover:text-ink border-hairline hover:bg-canvas-soft dark:text-gray-300 dark:hover:text-white dark:hover:bg-neutral-800'
                 }`}
               >
                 {genre.name}
@@ -93,7 +94,7 @@ export default function GenreRow() {
             <Loader2 className="w-8 h-8 text-link animate-spin" />
           </div>
         ) : items.length > 0 ? (
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-6 scroll-smooth">
+          <ScrollRowWrapper>
             {items.map(item => (
               <MovieCard
                 key={item.id}
@@ -106,7 +107,7 @@ export default function GenreRow() {
                 media_type="movie"
               />
             ))}
-          </div>
+          </ScrollRowWrapper>
         ) : (
           <div className="h-[280px] flex items-center justify-center bg-canvas rounded-xl border border-hairline shadow-level-1 text-mute text-sm font-mono">
             No content found for this genre.

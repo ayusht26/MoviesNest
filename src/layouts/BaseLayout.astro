@@ -8,6 +8,7 @@ export interface Props {
   cinemaMode?: boolean;
 }
 const { title = 'MoviesNest', description = 'Watch movies and TV shows for free', ogImage, cinemaMode = false } = Astro.props;
+const tmdbKey = import.meta.env.PUBLIC_TMDB_KEY || 'test';
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +16,7 @@ const { title = 'MoviesNest', description = 'Watch movies and TV shows for free'
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content={description} />
+  <meta name="tmdb-status" content={tmdbKey} />
   <title>{title} | MoviesNest</title>
   <!-- OG Meta -->
   <meta property="og:title" content={title} />
@@ -23,11 +25,71 @@ const { title = 'MoviesNest', description = 'Watch movies and TV shows for free'
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  
+  <script is:inline define:vars={{ cinemaMode }}>
+    (() => {
+      if (cinemaMode) {
+        document.documentElement.classList.add('dark');
+        return;
+      }
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+  </script>
 </head>
-<body class={`min-h-screen ${cinemaMode ? 'cinema-dark' : 'bg-canvas-soft text-ink'}`}>
+<body class={`min-h-screen bg-canvas-soft text-ink transition-colors duration-300 ${cinemaMode ? 'cinema-dark dark' : ''}`}>
   <slot />
+
+  <!-- VPN Block Warning Banner -->
+  <div id="vpn-banner" class="hidden fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto">
+    <div class="glass-card rounded-2xl p-4 border border-yellow-500/40 shadow-xl shadow-black/60 bg-canvas/80 backdrop-blur-md">
+      <div class="flex items-start gap-3">
+        <span class="text-yellow-400 text-xl">⚠️</span>
+        <div class="flex-1">
+          <p class="text-nest-text text-sm font-semibold">Content blocked by your ISP</p>
+          <p class="text-nest-muted text-xs mt-1">Movie data can't load. Please connect to a VPN.</p>
+          <a href="/blocked" class="mt-2 inline-block text-nest-accent text-xs underline underline-offset-2">
+            How to fix this →
+          </a>
+        </div>
+        <button onclick="document.getElementById('vpn-banner').classList.add('hidden')"
+          class="text-nest-muted hover:text-nest-text text-sm cursor-pointer">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Client-side VPN detection — ping a TMDB image endpoint
+    (async () => {
+      if (window.location.pathname === '/blocked') return;
+      try {
+        const key = document.querySelector('meta[name="tmdb-status"]')?.getAttribute('content') || 'test';
+        await fetch('https://api.themoviedb.org/3/configuration?api_key=' + key, {
+          signal: AbortSignal.timeout(5000),
+          mode: 'no-cors'
+        });
+      } catch (err) {
+        // If fetch throws, ISP is blocking
+        const banner = document.getElementById('vpn-banner');
+        if (banner) {
+          banner.classList.remove('hidden');
+        }
+      }
+    })();
+  </script>
 </body>
 </html>
-

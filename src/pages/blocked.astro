@@ -1,0 +1,78 @@
+---
+// src/pages/blocked.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="VPN Required — MoviesNest">
+  <div class="min-h-screen flex items-center justify-center px-4 bg-nest-bg">
+    <div class="max-w-lg w-full text-center space-y-6">
+      <!-- Icon -->
+      <div class="w-24 h-24 mx-auto rounded-full bg-nest-accent/10 border border-nest-accent/30 flex items-center justify-center">
+        <svg class="w-12 h-12 text-nest-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      </div>
+
+      <!-- Heading -->
+      <div>
+        <p class="text-nest-accent font-mono text-xs uppercase tracking-widest mb-2">Connection Blocked</p>
+        <h1 class="font-display text-5xl text-nest-text mb-3">VPN Required.</h1>
+        <p class="text-nest-muted text-base leading-relaxed">
+          Your ISP (likely JIO or BSNL) is blocking access to the movie database.
+          Please connect to a VPN to use MoviesNest.
+        </p>
+      </div>
+
+      <!-- Instructions -->
+      <div class="glass-card rounded-2xl p-6 text-left space-y-4">
+        <h2 class="text-nest-text font-semibold text-sm uppercase tracking-wider">How to fix this</h2>
+        <ol class="space-y-3">
+          {[
+            'Download a free VPN — Windscribe, ProtonVPN, or Cloudflare WARP (1.1.1.1 app) are recommended.',
+            'Connect to any server outside India (US, UK, Germany work best).',
+            'Reload this page once VPN is active.',
+            'Cloudflare WARP is the fastest option — it\'s free and works on mobile too.'
+          ].map((step, i) => (
+            <li class="flex gap-3">
+              <span class="flex-shrink-0 w-6 h-6 rounded-full bg-nest-accent/20 border border-nest-accent/40 text-nest-accent text-xs font-mono flex items-center justify-center">
+                {i + 1}
+              </span>
+              <span class="text-nest-muted text-sm leading-relaxed">{step}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <!-- Recommended VPNs -->
+      <div class="grid grid-cols-3 gap-3">
+        {[
+          { name: 'Cloudflare WARP', tag: 'Free · Fastest', color: 'text-orange-400', url: 'https://1.1.1.1' },
+          { name: 'ProtonVPN', tag: 'Free · Private', color: 'text-purple-400', url: 'https://protonvpn.com' },
+          { name: 'Windscribe', tag: 'Free · 10GB/mo', color: 'text-blue-400', url: 'https://windscribe.com' },
+        ].map(vpn => (
+          <a
+            href={vpn.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="glass-card rounded-xl p-3 text-center hover:border-nest-accent/30 transition-all group"
+          >
+            <p class={`font-semibold text-xs ${vpn.color} group-hover:brightness-110`}>{vpn.name}</p>
+            <p class="text-nest-muted text-[11px] mt-0.5">{vpn.tag}</p>
+          </a>
+        ))}
+      </div>
+
+      <!-- Retry button -->
+      <button
+        onclick="window.location.reload()"
+        class="w-full py-3.5 rounded-xl bg-nest-accent text-nest-bg font-semibold text-sm hover:bg-white transition-all glow-cyan cursor-pointer"
+      >
+        I'm Connected — Retry
+      </button>
+
+      <p class="text-nest-muted text-xs">
+        Error code: <code class="font-mono text-nest-accent">ETIMEDOUT / ISP_BLOCK</code>
+      </p>
+    </div>
+  </div>
+</BaseLayout>

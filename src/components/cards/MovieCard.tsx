@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Play, Calendar } from 'lucide-react';
 import { imgUrl } from '../../lib/tmdb';
+import Skeleton from '../ui/Skeleton';
 
 interface Props {
   id: number;
@@ -16,6 +17,7 @@ interface Props {
 
 export default function MovieCard({ id, title, poster_path, vote_average, release_date, first_air_date, media_type = 'movie' }: Props) {
   const [hovered, setHovered] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const href = `/${media_type}/${id}`;
   const year = (release_date || first_air_date || '').slice(0, 4);
 
@@ -30,11 +32,22 @@ export default function MovieCard({ id, title, poster_path, vote_average, releas
     >
       {/* Poster */}
       <div className="relative aspect-[2/3] overflow-hidden bg-canvas-soft-2">
+        {!isLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full rounded-none" />
+        )}
         <img
           src={poster_path ? imgUrl(poster_path, 'w342') : '/placeholder.jpg'}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onLoad={() => setIsLoaded(true)}
+          className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
           loading="lazy"
+          onError={(e) => {
+            setIsLoaded(true);
+            (e.target as HTMLImageElement).src = '/placeholder.jpg';
+          }}
+          draggable={false}
         />
 
         {/* Hover play overlay */}

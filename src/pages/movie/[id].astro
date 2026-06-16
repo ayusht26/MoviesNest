@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/layout/Navbar';
 import DetailHero from '../../components/detail/DetailHero';
-import VidkingPlayer from '../../components/player/VidkingPlayer';
+import PlayGate from '../../components/player/PlayGate';
 import CastRow from '../../components/detail/CastRow';
 import SimilarRow from '../../components/detail/SimilarRow';
 import Footer from '../../components/layout/Footer';
@@ -69,7 +69,13 @@ const similar = movie.similar?.results || [];
       </div>
 
       <div class="shadow-level-3 rounded-xl overflow-hidden border border-neutral-800 bg-black">
-        <VidkingPlayer type="movie" tmdbId={id} client:load />
+        <PlayGate
+          type="movie"
+          tmdbId={id}
+          title={title}
+          backdropUrl={backdrop}
+          client:visible
+        />
       </div>
     </div>
 

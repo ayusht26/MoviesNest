@@ -10,46 +10,52 @@ import Footer from '../components/layout/Footer';
 import { getTrending, getTopRated, getNowPlaying, getDiscoverByNetwork } from '../lib/tmdb';
 
 // Fetch data on the server side (SSR)
-let trendingMovies = [];
-let trendingTv = [];
-let topTenMovies = [];
-let nowPlaying = [];
-let netflixShows = [];
+let trendingMoviesData = null;
+let trendingTvData = null;
+let topTenData = null;
+let nowPlayingData = null;
+let netflixData = null;
 
 try {
-  const trendingMoviesData = await getTrending('movie', 'week');
-  trendingMovies = trendingMoviesData?.results || [];
+  trendingMoviesData = await getTrending('movie', 'week');
 } catch (e) {
   console.error("Failed fetching trending movies:", e);
 }
 
 try {
-  const trendingTvData = await getTrending('tv', 'week');
-  trendingTv = trendingTvData?.results || [];
+  trendingTvData = await getTrending('tv', 'week');
 } catch (e) {
   console.error("Failed fetching trending TV series:", e);
 }
 
 try {
-  const topTenData = await getTopRated('movie');
-  topTenMovies = topTenData?.results || [];
+  topTenData = await getTopRated('movie');
 } catch (e) {
   console.error("Failed fetching top rated movies:", e);
 }
 
 try {
-  const nowPlayingData = await getNowPlaying();
-  nowPlaying = nowPlayingData?.results || [];
+  nowPlayingData = await getNowPlaying();
 } catch (e) {
   console.error("Failed fetching now playing:", e);
 }
 
 try {
-  const netflixData = await getDiscoverByNetwork('213', 'tv');
-  netflixShows = netflixData?.results || [];
+  netflixData = await getDiscoverByNetwork('213', 'tv');
 } catch (e) {
   console.error("Failed fetching initial Netflix shows:", e);
 }
+
+const isBlocked = [trendingMoviesData, trendingTvData, topTenData].every(d => d?.__blocked);
+if (isBlocked) {
+  return Astro.redirect('/blocked');
+}
+
+const trendingMovies = trendingMoviesData?.results || [];
+const trendingTv = trendingTvData?.results || [];
+const topTenMovies = topTenData?.results || [];
+const nowPlaying = nowPlayingData?.results || [];
+const netflixShows = netflixData?.results || [];
 
 // Slice items for Hero Carousel
 const heroItems = nowPlaying.slice(0, 5);

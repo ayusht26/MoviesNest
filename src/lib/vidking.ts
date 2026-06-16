@@ -19,7 +19,7 @@ export interface TVEmbedOptions {
 export function movieEmbedUrl(opts: MovieEmbedOptions): string {
   const params = new URLSearchParams({
     color: BRAND_COLOR,
-    autoPlay: String(opts.autoPlay ?? true),
+    autoPlay: String(opts.autoPlay ?? false),
   });
   if (opts.progress) params.set('progress', String(opts.progress));
   return `${VIDKING_BASE}/embed/movie/${opts.tmdbId}?${params}`;
@@ -28,7 +28,7 @@ export function movieEmbedUrl(opts: MovieEmbedOptions): string {
 export function tvEmbedUrl(opts: TVEmbedOptions): string {
   const params = new URLSearchParams({
     color: BRAND_COLOR,
-    autoPlay: String(opts.autoPlay ?? true),
+    autoPlay: String(opts.autoPlay ?? false),
     nextEpisode: 'true',
     episodeSelector: 'true',
   });

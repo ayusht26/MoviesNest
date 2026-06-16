@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import VidkingPlayer from './VidkingPlayer';
+import PlayGate from './PlayGate';
 import EpisodeSelector from './EpisodeSelector';
 
 interface Season {
@@ -13,9 +13,10 @@ interface Props {
   showId: number;
   seasons: Season[];
   showTitle: string;
+  backdropUrl?: string;
 }
 
-export default function TVPlayerSection({ showId, seasons, showTitle }: Props) {
+export default function TVPlayerSection({ showId, seasons, showTitle, backdropUrl }: Props) {
   const [activeSeason, setActiveSeason] = useState(1);
   const [activeEpisode, setActiveEpisode] = useState(1);
 
@@ -25,6 +26,21 @@ export default function TVPlayerSection({ showId, seasons, showTitle }: Props) {
     // Smooth scroll to player on selection
     const el = document.getElementById('player-display-container');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleNextEpisode = () => {
+    const seasonInfo = seasons.find(s => s.season_number === activeSeason);
+    const maxEpisodes = seasonInfo ? seasonInfo.episode_count : 20;
+
+    if (activeEpisode < maxEpisodes) {
+      handleSelect(activeSeason, activeEpisode + 1);
+    } else {
+      const nextSeasonNum = activeSeason + 1;
+      const nextSeasonExists = seasons.some(s => s.season_number === nextSeasonNum);
+      if (nextSeasonExists) {
+        handleSelect(nextSeasonNum, 1);
+      }
+    }
   };
 
   return (
@@ -42,7 +58,15 @@ export default function TVPlayerSection({ showId, seasons, showTitle }: Props) {
         </div>
         
         <div className="shadow-level-3 rounded-xl overflow-hidden border border-neutral-800 bg-black">
-          <VidkingPlayer type="tv" tmdbId={showId} season={activeSeason} episode={activeEpisode} />
+          <PlayGate
+            type="tv"
+            tmdbId={showId}
+            season={activeSeason}
+            episode={activeEpisode}
+            title={showTitle}
+            backdropUrl={backdropUrl}
+            onNextEpisode={handleNextEpisode}
+          />
         </div>
       </div>
 
