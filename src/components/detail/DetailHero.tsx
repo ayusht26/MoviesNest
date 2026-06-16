@@ -48,7 +48,7 @@ export default function DetailHero({
   const poster = poster_path ? imgUrl(poster_path, 'w342') : '';
 
   return (
-    <div className="relative w-full min-h-[50vh] lg:h-[65vh] flex items-end overflow-hidden pb-12 pt-36 bg-[#0a0a0a]">
+    <div className="relative w-full min-h-[50vh] lg:min-h-[65vh] flex items-end overflow-hidden pb-12 pt-36 bg-[#0a0a0a]">
       {/* Backdrop Image */}
       <div className="absolute inset-0">
         <Skeleton className="absolute inset-0 w-full h-full rounded-none opacity-20 z-0" />

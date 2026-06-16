@@ -224,3 +224,12 @@ body {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
 }
+
+/* Hide navbar and banners when full-screen video player is active */
+body.player-active nav,
+body.player-active #vpn-banner,
+body.player-active #rate-limit-banner,
+body.player-active #auth-error-banner {
+  display: none !important;
+}
+
