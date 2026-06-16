@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Navbar from '../../../components/layout/Navbar';
+import Footer from '../../../components/layout/Footer';
+import { discoverMovies, discoverTV, getMovieGenres, getTVGenres } from '../../../lib/tmdb';
+
+const { type, id } = Astro.params;
+const page = Number(Astro.url.searchParams.get('page')) || 1;
+
+const isValidType = type === 'movie' || type === 'tv';
+
+let items: any = { results: [] };
+let genreName = '';
+
+if (isValidType && id) {
+  try {
+    const fetchFn = type === 'movie' ? discoverMovies : discoverTV;
+    items = await fetchFn({ with_genres: id, page: String(page), sort_by: 'popularity.desc' });
+    const genresResp = type === 'movie' ? await getMovieGenres() : await getTVGenres();
+    const genre = (genresResp?.genres || []).find((g: any) => String(g.id) === id);
+    genreName = genre?.name || 'Genre';
+  } catch {}
+}
+---
+
+<BaseLayout title={`${genreName || type} — MoviesNest`} description={`Browse ${genreName || type} content.`}>
+  <Navbar client:load />
+
+  <main class="max-w-7xl mx-auto px-4 pt-24 pb-16 min-h-screen">
+    <h1 class="text-2xl font-bold text-white mb-6 capitalize">{genreName || `${type} Genre`}</h1>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      {(items?.results || []).map((item: any) => (
+        <a key={item.id} href={`/${type}/${item.id}`} class="block group">
+          <div class="aspect-[2/3] rounded-lg overflow-hidden bg-[#1f1f1f] mb-2">
+            {item.poster_path ? (
+              <img src={`https://image.tmdb.org/t/p/w500${item.poster_path}`} alt={item.title || item.name} loading="lazy" class="w-full h-full object-cover" />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center text-gray-600 text-xs">No poster</div>
+            )}
+          </div>
+          <p class="text-sm text-white font-medium truncate">{item.title || item.name}</p>
+          <div class="flex items-center gap-1 text-xs text-gray-500">
+            <span class="text-yellow-400">&#9733;</span>
+            <span>{item.vote_average?.toFixed(1)}</span>
+            {(item.release_date || item.first_air_date) && (
+              <span>• {new Date(item.release_date || item.first_air_date).getFullYear()}</span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    {(items?.total_pages || 0) > 1 && (
+      <div class="flex justify-center gap-2 mt-8">
+        {page > 1 && (
+          <a href={`/genre/${type}/${id}?page=${page - 1}`}
+            class="px-4 py-2 rounded-lg text-sm bg-[#1f1f1f] text-white border border-[#2a2a2a] hover:bg-[#2a2a2a]">
+            Previous
+          </a>
+        )}
+        {page < (items?.total_pages || 1) && page < 500 && (
+          <a href={`/genre/${type}/${id}?page=${page + 1}`}
+            class="px-4 py-2 rounded-lg text-sm bg-[#1f1f1f] text-white border border-[#2a2a2a] hover:bg-[#2a2a2a]">
+            Next
+          </a>
+        )}
+      </div>
+    )}
+  </main>
+
+  <Footer />
+</BaseLayout>
