@@ -32,7 +32,6 @@ type Props = MovieProps | TVProps;
 export default function VidkingPlayer(props: Props) {
   const [loading, setLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
-  const [initialProgress, setInitialProgress] = useState<number | undefined>(undefined);
   const [showServerTip, setShowServerTip] = useState(true);
 
   const isTV = props.type === 'tv';
@@ -61,14 +60,8 @@ export default function VidkingPlayer(props: Props) {
     };
   }, []);
 
-  // Load progress and mount client-side
+  // Mount client-side
   useEffect(() => {
-    const saved = localStorage.getItem(storageKey);
-    if (saved) {
-      setInitialProgress(Number(saved));
-    } else {
-      setInitialProgress(undefined);
-    }
     setLoading(true);
     setIsMounted(true);
   }, [storageKey]);
@@ -100,12 +93,11 @@ export default function VidkingPlayer(props: Props) {
   }
 
   const src = props.type === 'movie'
-    ? movieEmbedUrl({ tmdbId: props.tmdbId, progress: initialProgress ?? props.progress, autoPlay: props.autoPlay })
+    ? movieEmbedUrl({ tmdbId: props.tmdbId, autoPlay: props.autoPlay })
     : tvEmbedUrl({
         tmdbId: props.tmdbId,
         season: tvProps.season,
         episode: tvProps.episode,
-        progress: initialProgress ?? props.progress,
         autoPlay: props.autoPlay,
       });
 

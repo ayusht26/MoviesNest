@@ -18,7 +18,6 @@ export interface TVEmbedOptions {
 export function movieEmbedUrl(opts: MovieEmbedOptions): string {
   const params = new URLSearchParams({});
   if (opts.autoPlay !== false) params.set('autoPlay', 'true');
-  if (opts.progress) params.set('progress', String(opts.progress));
   
   const query = params.toString();
   return `${VIDKING_BASE}/embed/movie/${opts.tmdbId}${query ? `?${query}` : ''}`;
@@ -31,6 +30,5 @@ export function tvEmbedUrl(opts: TVEmbedOptions): string {
     nextEpisode: 'true', // next episode button enabled
     episodeSelector: 'true', // episode selection menu enabled
   });
-  if (opts.progress) params.set('progress', String(opts.progress));
   return `${VIDKING_BASE}/embed/tv/${opts.tmdbId}/${opts.season}/${opts.episode}?${params}`;
 }
