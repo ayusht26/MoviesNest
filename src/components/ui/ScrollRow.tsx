@@ -11,7 +11,6 @@ interface Props {
 export default function ScrollRow({ title, accent = '', children }: Props) {
   const rowRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLElement>(null);
-  const [hasEnteredViewport, setHasEnteredViewport] = useState(false);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
 
@@ -62,32 +61,21 @@ export default function ScrollRow({ title, accent = '', children }: Props) {
     setTimeout(updateScrollState, 400);
   };
 
-  // Intersection Observer to lazy load the row
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHasEnteredViewport(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '200px' }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   useEffect(() => {
     const el = rowRef.current;
-    if (el && hasEnteredViewport) {
+    if (el) {
       updateScrollState();
+      // Re-run after layout/images settle
+      const timer = setTimeout(updateScrollState, 800);
+
       // Add resize listener
       window.addEventListener('resize', updateScrollState);
-      return () => window.removeEventListener('resize', updateScrollState);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', updateScrollState);
+      };
     }
-  }, [children, hasEnteredViewport]);
+  }, [children]);
 
   return (
     <section ref={containerRef} className="mb-10">
@@ -117,16 +105,14 @@ export default function ScrollRow({ title, accent = '', children }: Props) {
       </div>
       <div
         ref={rowRef}
-        className="flex gap-3 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 pb-4 scroll-smooth cursor-grab active:cursor-grabbing select-none"
+        className="flex gap-3 overflow-x-auto hide-scrollbar px-4 sm:px-6 lg:px-8 pb-4 cursor-grab active:cursor-grabbing select-none"
         onScroll={updateScrollState}
         onMouseDown={onMouseDown}
         onMouseLeave={onMouseLeave}
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
       >
-        {hasEnteredViewport ? children : Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="w-[150px] sm:w-[170px] lg:w-[190px] aspect-[2/3] rounded-lg bg-canvas-soft-2 animate-pulse flex-shrink-0" />
-        ))}
+        {children}
       </div>
     </section>
   );

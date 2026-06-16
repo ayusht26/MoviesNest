@@ -88,8 +88,35 @@ export default function SleekSearchPage() {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [results, setResults] = useState<Result[]>([]);
+  const [trending, setTrending] = useState<Result[]>(FEATURED_ITEMS);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Fetch trending items on mount
+  useEffect(() => {
+    let active = true;
+    const fetchTrending = async () => {
+      try {
+        const res = await fetch('/api/tmdb/trending/all/week');
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const data = await res.json();
+        if (active && data && data.results && data.results.length > 0) {
+          const filtered = data.results.filter(
+            (r: any) => r.media_type === 'movie' || r.media_type === 'tv'
+          );
+          if (filtered.length > 0) {
+            setTrending(filtered.slice(0, 12)); // Display up to 12 real trending entries
+          }
+        }
+      } catch (err) {
+        console.warn('[SearchPage] Failed to fetch real trending, using mock fallback.', err);
+      }
+    };
+    fetchTrending();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Debounce the query input
   useEffect(() => {
@@ -207,7 +234,7 @@ export default function SleekSearchPage() {
               </span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 justify-items-center">
-              {FEATURED_ITEMS.map((item) => (
+              {trending.map((item) => (
                 <MovieCard
                   key={item.id}
                   id={item.id}

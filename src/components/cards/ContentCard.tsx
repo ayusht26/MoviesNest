@@ -60,15 +60,12 @@ export default function ContentCard({
           HD
         </div>
 
-        {!imgLoaded && (
-          <div className="absolute inset-0 bg-surface-2 animate-pulse" />
-        )}
+        <div className="absolute inset-0 bg-surface-2 z-0" />
         <img
           src={imgSrc}
           alt={title}
           loading="lazy"
-          onLoad={() => setImgLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className="relative z-10 w-full h-full object-cover"
         />
       </div>
 

@@ -228,7 +228,7 @@ export function getTMDBStatus() {
   };
 }
 
-async function tmdb(endpoint: string, params: Record<string,string> = {}): Promise<any> {
+export async function tmdbInternal(endpoint: string, params: Record<string,string> = {}): Promise<any> {
   // 1. Build cache key and check cache
   const cacheKey = `${endpoint}?${new URLSearchParams(params).toString()}`;
   const cached = tmdbCache.get(cacheKey);
@@ -298,6 +298,29 @@ async function tmdb(endpoint: string, params: Record<string,string> = {}): Promi
     return getMockResponse(endpoint, params);
   }
 }
+
+async function tmdb(endpoint: string, params: Record<string,string> = {}): Promise<any> {
+  const isServer = import.meta.env.SSR;
+
+  if (!isServer) {
+    // Client-side browser request: transparently route to local proxy API route
+    const query = new URLSearchParams(params).toString();
+    try {
+      const res = await fetch(`/api/tmdb${endpoint}?${query}`);
+      if (!res.ok) {
+        throw new Error(`API proxy returned status ${res.status}`);
+      }
+      return res.json();
+    } catch (err) {
+      console.warn(`[Client Proxy] Fetch failed for ${endpoint}. Falling back to mock data.`, err);
+      return getMockResponse(endpoint, params);
+    }
+  }
+
+  // Server-side (SSR) request: fetch directly using node-fetch & cache
+  return tmdbInternal(endpoint, params);
+}
+
 
 // Generate mock responses for all endpoints
 function getMockResponse(endpoint: string, params: Record<string, string> = {}): any {

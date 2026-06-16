@@ -55,8 +55,8 @@ const seasons = show.seasons || [];
 
     {/* Cast & Recommendations */}
     <div class="mt-16 space-y-12 pb-16">
-      {cast.length > 0 && <CastRow cast={cast} />}
-      {similar.length > 0 && <SimilarRow items={similar} media_type="tv" />}
+      {cast.length > 0 && <CastRow client:load cast={cast} />}
+      {similar.length > 0 && <SimilarRow client:load items={similar} media_type="tv" />}
     </div>
   </div>
 

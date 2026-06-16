@@ -56,8 +56,8 @@ const similar = movie.similar?.results || [];
 
     {/* Cast & Similar Movies Rows */}
     <div class="mt-12 space-y-12 pb-16">
-      {cast.length > 0 && <CastRow cast={cast} />}
-      {similar.length > 0 && <SimilarRow items={similar} media_type="movie" />}
+      {cast.length > 0 && <CastRow client:load cast={cast} />}
+      {similar.length > 0 && <SimilarRow client:load items={similar} media_type="movie" />}
     </div>
   </div>
 
