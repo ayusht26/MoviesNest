@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/layout/Navbar';
+import SearchPageWrapper from '../components/search/SearchPageWrapper';
+import Footer from '../components/layout/Footer';
+---
+
+<BaseLayout title="Search Results — MoviesNest" description="Search and discover movies and TV series to stream for free on MoviesNest.">
+  <Navbar client:load />
+  
+  <main class="relative z-10 min-h-[70vh]">
+    <SearchPageWrapper client:only="react" />
+  </main>
+
+  <Footer />
+</BaseLayout>

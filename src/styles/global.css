@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+@theme {
+  /* Vercel Design System Primitives */
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #fafafa;
+  --color-canvas-soft-2: #f5f5f5;
+  --color-primary: #171717;
+  --color-on-primary: #ffffff;
+  --color-ink: #171717;
+  --color-body: #4d4d4d;
+  --color-mute: #888888;
+  --color-hairline: #ebebeb;
+  --color-hairline-strong: #a1a1a1;
+  
+  --color-link: #0070f3;
+  --color-success: #0070f3;
+  --color-error: #ee0000;
+  --color-warning: #f5a623;
+  
+  --color-violet: #7928ca;
+  --color-cyan: #50e3c2;
+  --color-highlight-pink: #ff0080;
+
+  /* Theme Mapping for MoviesNest Compatibility */
+  --color-nest-bg: var(--color-canvas-soft);
+  --color-nest-surface: var(--color-canvas);
+  --color-nest-border: var(--color-hairline);
+  --color-nest-text: var(--color-ink);
+  --color-nest-muted: var(--color-body);
+  --color-nest-accent: var(--color-link);
+  --color-nest-accentDim: #0056b3;
+  --color-nest-gold: var(--color-warning);
+  --color-nest-red: var(--color-error);
+  --color-nest-overlay: rgba(23, 23, 23, 0.4);
+
+  --font-display: Geist, Inter, system-ui, -apple-system, sans-serif;
+  --font-body: Geist, Inter, system-ui, -apple-system, sans-serif;
+  --font-mono: Geist Mono, "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+
+  --animate-fade-up: fadeUp 0.6s ease forwards;
+  --animate-shimmer: shimmer 1.5s infinite;
+  --animate-pulse-glow: pulseGlow 2s ease-in-out infinite;
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes pulseGlow {
+    0%, 100% {
+      opacity: 0.8;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* Cinema dark mode override */
+.cinema-dark {
+  color-scheme: dark;
+  --color-nest-bg: #0a0a0a;
+  --color-nest-surface: #121212;
+  --color-nest-border: #262626;
+  --color-nest-text: #ffffff;
+  --color-nest-muted: #a3a3a3;
+  --color-nest-accent: #50e3c2; /* Cyan for dark mode accents */
+  --color-nest-accentDim: #29bc9b;
+  --color-nest-overlay: rgba(0, 0, 0, 0.85);
+  background-color: #0a0a0a !important;
+  color: #ffffff !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-canvas-soft);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}
+
+.cinema-dark ::-webkit-scrollbar-thumb {
+  background: #333333;
+}
+.cinema-dark ::-webkit-scrollbar-thumb:hover {
+  background: #444444;
+}
+
+/* Vercel Stacked Shadows */
+.shadow-level-1 {
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--color-hairline);
+}
+.shadow-level-2 {
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-hairline);
+}
+.shadow-level-3 {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.02), 0px 8px 16px -4px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--color-hairline);
+}
+.shadow-level-4 {
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 32px -8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-hairline);
+}
+
+.cinema-dark .shadow-level-1 {
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  border: 1px solid #262626;
+}
+.cinema-dark .shadow-level-2 {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+  border: 1px solid #262626;
+}
+.cinema-dark .shadow-level-3 {
+  box-shadow: 0px 8px 16px -4px rgba(0, 0, 0, 0.4);
+  border: 1px solid #262626;
+}
+
+/* Vercel Card styling */
+.glass-card {
+  background-color: var(--color-canvas);
+  border: 1px solid var(--color-hairline);
+  border-radius: 8px;
+}
+.cinema-dark .glass-card {
+  background-color: #121212;
+  border-color: #262626;
+}
+
+/* Vercel Mesh Gradient Background */
+.mesh-gradient-bg {
+  position: relative;
+  background-color: var(--color-canvas);
+}
+.mesh-gradient-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(0, 124, 240, 0.06) 0px, transparent 50%),
+    radial-gradient(at 50% 0%, rgba(121, 40, 202, 0.06) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(255, 77, 77, 0.06) 0px, transparent 50%),
+    radial-gradient(at 85% 60%, rgba(249, 203, 40, 0.04) 0px, transparent 40%);
+  pointer-events: none;
+}
+
+/* Utility to hide scrollbars */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Dark mode rating bg */
+.rating-badge-dark {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}

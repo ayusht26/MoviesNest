@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/layout/Navbar';
+import DetailHero from '../../components/detail/DetailHero';
+import TVPlayerSection from '../../components/player/TVPlayerSection';
+import CastRow from '../../components/detail/CastRow';
+import SimilarRow from '../../components/detail/SimilarRow';
+import Footer from '../../components/layout/Footer';
+import { getTVShow } from '../../lib/tmdb';
+
+const { id } = Astro.params;
+
+let show = null;
+try {
+  show = await getTVShow(id);
+} catch (e) {
+  console.error(`Error fetching TV show ${id}:`, e);
+}
+
+// Redirect or return 404 if show not found
+if (!show || !show.id) {
+  return new Response("TV Show not found in database", { status: 404 });
+}
+
+const title = show.name || 'Show Details';
+const backdrop = show.backdrop_path || '';
+const poster = show.poster_path || '';
+const voteAverage = show.vote_average || 0;
+const overview = show.overview || '';
+const firstAirDate = show.first_air_date || '';
+const genres = show.genres || [];
+const tagline = show.tagline || '';
+const cast = show.credits?.cast || [];
+const similar = show.similar?.results || [];
+const seasons = show.seasons || [];
+---
+
+<BaseLayout title={`${title} — MoviesNest`} description={overview} ogImage={backdrop} cinemaMode={true}>
+  <Navbar client:load cinemaMode={true} />
+  
+  <div class="relative z-10 cinema-dark min-h-screen">
+    {/* Detail Hero Section */}
+    <DetailHero
+      title={title}
+      backdrop_path={backdrop}
+      poster_path={poster}
+      vote_average={voteAverage}
+      overview={overview}
+      first_air_date={firstAirDate}
+      genres={genres}
+      tagline={tagline}
+      media_type="tv"
+      onPlayClick={() => {
+        const el = document.getElementById('player-display-container');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }}
+      client:load
+    />
+
+    {/* TV Player Section with Episode Selector */}
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+      <TVPlayerSection showId={Number(id)} seasons={seasons} showTitle={title} client:load />
+    </div>
+
+    {/* Cast & Recommendations */}
+    <div class="mt-16 space-y-12 pb-16">
+      {cast.length > 0 && <CastRow cast={cast} />}
+      {similar.length > 0 && <SimilarRow items={similar} media_type="tv" />}
+    </div>
+  </div>
+
+  <Footer cinemaMode={true} />
+</BaseLayout>

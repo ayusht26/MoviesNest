@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" fill="none">
+  <!-- Gradient for the Icon -->
+  <defs>
+    <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D4FF" />
+      <stop offset="100%" stop-color="#7B2FFF" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Cinema Reel Icon -->
+  <g transform="translate(10, 5)">
+    <rect width="40" height="40" rx="10" fill="url(#logo-grad)" />
+    <!-- Film reel paths -->
+    <circle cx="20" cy="20" r="10" stroke="#FFFFFF" stroke-width="2" />
+    <circle cx="20" cy="20" r="3" fill="#FFFFFF" />
+    <circle cx="20" cy="14" r="1.5" fill="#FFFFFF" />
+    <circle cx="20" cy="26" r="1.5" fill="#FFFFFF" />
+    <circle cx="14" cy="20" r="1.5" fill="#FFFFFF" />
+    <circle cx="26" cy="20" r="1.5" fill="#FFFFFF" />
+  </g>
+  
+  <!-- Text Logo -->
+  <text x="62" y="32" font-family="'Inter', 'Bebas Neue', sans-serif" font-weight="800" font-size="22" fill="#F0F4FF" letter-spacing="2">
+    MOVIES<tspan fill="#00D4FF">NEST</tspan>
+  </text>
+</svg>
