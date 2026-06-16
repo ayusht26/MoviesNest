@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { searchMulti } from '../../lib/tmdb';
 import MovieCard from '../cards/MovieCard';
 import Skeleton from '../ui/Skeleton';
-import { Search, Compass, AlertCircle } from 'lucide-react';
+import { Search, Compass, AlertCircle, Play } from 'lucide-react';
 
 interface Result {
   id: number;
@@ -91,6 +91,19 @@ export default function SleekSearchPage() {
   const [trending, setTrending] = useState<Result[]>(FEATURED_ITEMS);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [continueWatching, setContinueWatching] = useState<any[]>([]);
+
+  useEffect(() => {
+    try {
+      const listJson = localStorage.getItem('moviesnest_continue_watching');
+      if (listJson) {
+        const list = JSON.parse(listJson);
+        if (Array.isArray(list)) {
+          setContinueWatching(list);
+        }
+      }
+    } catch {}
+  }, []);
 
   // Fetch trending items on mount
   useEffect(() => {
@@ -225,7 +238,37 @@ export default function SleekSearchPage() {
             <p className="text-sm text-body">{error}</p>
           </div>
         ) : query.trim() === '' ? (
-          <div>
+          <div className="w-full">
+            {/* Continue Watching Section */}
+            {continueWatching.length > 0 && (
+              <div className="mb-12 w-full">
+                <div className="flex items-center gap-2 mb-6 border-b border-hairline pb-2">
+                  <Play className="w-4 h-4 text-cyan" />
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.15em] text-ink">
+                    Continue Watching.
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 justify-items-center">
+                  {continueWatching.map((item) => (
+                    <div key={item.id} className="relative group animate-fade-up">
+                      <MovieCard
+                        id={item.id}
+                        title={item.title}
+                        poster_path={item.posterUrl}
+                        vote_average={0}
+                        media_type={item.mediaType}
+                      />
+                      {item.mediaType === 'tv' && item.season && item.episode && (
+                        <div className="absolute top-2 left-2 pointer-events-none z-20 px-1.5 py-0.5 rounded bg-cyan text-black font-mono text-[9px] font-bold shadow-sm uppercase tracking-wide">
+                          S{item.season} E{item.episode}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Show Featured Items when no search query */}
             <div className="flex items-center gap-2 mb-6 border-b border-hairline pb-2">
               <Compass className="w-4 h-4 text-link" />

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Play } from 'lucide-react';
 import { getTVSeason, imgUrl } from '../../lib/tmdb';
 import Skeleton from '../ui/Skeleton';
@@ -28,6 +28,14 @@ export default function EpisodeSelector({ showId, seasons, onPlayEpisode }: Prop
   const [activeSeason, setActiveSeason] = useState(seasons.length > 0 ? seasons.filter(s => s.season_number > 0)[0]?.season_number || 1 : 1);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  const scrollTabs = (direction: 'left' | 'right') => {
+    if (tabsRef.current) {
+      const scrollAmount = direction === 'left' ? -200 : 200;
+      tabsRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -53,23 +61,48 @@ export default function EpisodeSelector({ showId, seasons, onPlayEpisode }: Prop
   return (
     <div className="bg-neutral-900/30 rounded-xl overflow-hidden mt-8 border border-neutral-800 shadow-level-2">
       {/* Season Tabs */}
-      <div className="flex gap-2 p-4 border-b border-neutral-800 overflow-x-auto hide-scrollbar bg-neutral-950/20">
-        {validSeasons.map(season => {
-          const isActive = activeSeason === season.season_number;
-          return (
-            <button
-              key={season.season_number}
-              onClick={() => setActiveSeason(season.season_number)}
-              className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
-                isActive
-                  ? 'bg-cyan border-cyan text-black shadow-md shadow-cyan/10 font-bold'
-                  : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:text-white hover:border-neutral-700'
-              }`}
-            >
-              {season.name || `Season ${season.season_number}`}
-            </button>
-          );
-        })}
+      <div className="relative border-b border-neutral-800 bg-neutral-950/20 flex items-center">
+        {validSeasons.length > 5 && (
+          <button
+            onClick={() => scrollTabs('left')}
+            className="flex items-center justify-center w-8 h-12 bg-neutral-950/80 hover:bg-neutral-950 border-r border-neutral-800 text-gray-400 hover:text-white cursor-pointer z-10 transition-colors font-mono"
+            aria-label="Previous seasons"
+          >
+            &lt;
+          </button>
+        )}
+
+        <div
+          ref={tabsRef}
+          className="flex-1 flex gap-2 p-4 overflow-x-auto hide-scrollbar scroll-smooth"
+        >
+          {validSeasons.map(season => {
+            const isActive = activeSeason === season.season_number;
+            return (
+              <button
+                key={season.season_number}
+                onClick={() => setActiveSeason(season.season_number)}
+                className={`flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+                  isActive
+                    ? 'bg-cyan border-cyan text-black shadow-md shadow-cyan/10 font-bold'
+                    : 'bg-neutral-900 border-neutral-800 text-gray-400 hover:text-white hover:border-neutral-700'
+                }`}
+              >
+                {season.name || `Season ${season.season_number}`}
+              </button>
+            );
+          })}
+        </div>
+
+        {validSeasons.length > 5 && (
+          <button
+            onClick={() => scrollTabs('right')}
+            className="flex items-center justify-center w-8 h-12 bg-neutral-950/80 hover:bg-neutral-950 border-l border-neutral-800 text-gray-400 hover:text-white cursor-pointer z-10 transition-colors font-mono"
+            aria-label="Next seasons"
+          >
+            &gt;
+          </button>
+        )}
       </div>
 
       {/* Episode Grid/List */}

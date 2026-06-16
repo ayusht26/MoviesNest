@@ -89,7 +89,7 @@ export default function TVPageWrapper({
           episode={activeEpisode.episode}
           title={`${title} - Season ${activeEpisode.season}, Episode ${activeEpisode.episode}`}
           episodeName={activeEpisode.episodeTitle}
-          posterUrl={poster}
+          posterUrl={poster_path}
           autoPlay={true}
           onClose={() => setActiveEpisode(null)}
           onNextEpisode={() => {

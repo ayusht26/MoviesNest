@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, Calendar, Clock, Film, Tv, Star, X } from 'lucide-react';
 import { backdropUrl, imgUrl } from '../../lib/tmdb';
 import { formatRuntime } from '../../lib/utils';
@@ -41,6 +41,28 @@ export default function DetailHero({
   media_type,
 }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [continueItem, setContinueItem] = useState<{
+    season?: number;
+    episode?: number;
+  } | null>(null);
+  const [resumeEpisode, setResumeEpisode] = useState<{ season: number; episode: number } | null>(null);
+
+  useEffect(() => {
+    try {
+      const listJson = localStorage.getItem('moviesnest_continue_watching');
+      if (listJson) {
+        const list = JSON.parse(listJson);
+        if (Array.isArray(list)) {
+          const found = list.find(
+            item => String(item.id) === String(tmdbId) && item.mediaType === media_type
+          );
+          if (found) {
+            setContinueItem(found);
+          }
+        }
+      }
+    } catch {}
+  }, [tmdbId, media_type]);
   
   const year = (release_date || first_air_date || '').slice(0, 4);
   const rawTitle = title.endsWith('.') ? title : `${title}.`;
@@ -130,15 +152,34 @@ export default function DetailHero({
               ))}
             </div>
 
-            {/* Action Play Button */}
-            <div className="flex justify-center lg:justify-start">
+            {/* Action Buttons Row */}
+            <div className="flex flex-wrap justify-center lg:justify-start gap-3">
               <button
-                onClick={() => setIsPlaying(true)}
+                onClick={() => {
+                  setResumeEpisode(null);
+                  setIsPlaying(true);
+                }}
                 className="group flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-cyan text-black text-xs font-mono font-bold uppercase tracking-wider hover:bg-white transition-all duration-300 shadow-md shadow-cyan/10 cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
                 Play Now.
               </button>
+
+              {continueItem && continueItem.season !== undefined && (
+                <button
+                  onClick={() => {
+                    setResumeEpisode({
+                      season: continueItem.season!,
+                      episode: continueItem.episode!
+                    });
+                    setIsPlaying(true);
+                  }}
+                  className="group flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-white/10 text-white border border-white/15 text-xs font-mono font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-colors duration-300 shadow-md cursor-pointer"
+                >
+                  <Play className="w-4 h-4 fill-current" />
+                  Continue: S{continueItem.season} E{continueItem.episode}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -151,7 +192,7 @@ export default function DetailHero({
             type="movie"
             tmdbId={tmdbId}
             title={title}
-            posterUrl={poster}
+            posterUrl={poster_path}
             autoPlay={true}
             onClose={() => setIsPlaying(false)}
           />
@@ -159,12 +200,15 @@ export default function DetailHero({
           <VidkingPlayer
             type="tv"
             tmdbId={tmdbId}
-            season={1}
-            episode={1}
-            title={`${title} - Season 1, Episode 1`}
-            posterUrl={poster}
+            season={resumeEpisode?.season || 1}
+            episode={resumeEpisode?.episode || 1}
+            title={`${title} - Season ${resumeEpisode?.season || 1}, Episode ${resumeEpisode?.episode || 1}`}
+            posterUrl={poster_path}
             autoPlay={true}
-            onClose={() => setIsPlaying(false)}
+            onClose={() => {
+              setIsPlaying(false);
+              setResumeEpisode(null);
+            }}
           />
         )
       )}
