@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/layout/Navbar';
 import DetailHero from '../../components/detail/DetailHero';
-import TVPlayerSection from '../../components/player/TVPlayerSection';
+import EpisodeSelector from '../../components/player/EpisodeSelector';
 import CastRow from '../../components/detail/CastRow';
 import SimilarRow from '../../components/detail/SimilarRow';
 import Footer from '../../components/layout/Footer';
@@ -50,16 +50,17 @@ const seasons = show.seasons || [];
       genres={genres}
       tagline={tagline}
       media_type="tv"
-      onPlayClick={() => {
-        const el = document.getElementById('player-display-container');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }}
+      playUrl={`/play/tv/${id}/1/1`}
       client:load
     />
 
-    {/* TV Player Section with Episode Selector */}
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-      <TVPlayerSection showId={Number(id)} seasons={seasons} showTitle={title} backdropUrl={backdrop} client:load />
+    {/* TV Episodes Selector */}
+    <div id="episodes-section" class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mt-12 scroll-mt-24">
+      <h2 class="text-xl sm:text-2xl font-semibold text-white tracking-tight flex items-center gap-2 mb-2">
+        <span class="w-1.5 h-6 rounded-full bg-cyan inline-block animate-pulse" />
+        Stream Episodes.
+      </h2>
+      <EpisodeSelector showId={Number(id)} seasons={seasons} client:load />
     </div>
 
     {/* Cast & Recommendations */}

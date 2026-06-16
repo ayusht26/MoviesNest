@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { getTMDBStatus } from '../lib/tmdb';
 
 export interface Props {
   title?: string;
@@ -9,6 +10,7 @@ export interface Props {
 }
 const { title = 'MoviesNest', description = 'Watch movies and TV shows for free', ogImage, cinemaMode = false } = Astro.props;
 const tmdbKey = import.meta.env.PUBLIC_TMDB_KEY || 'test';
+const tmdbStatus = getTMDBStatus();
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -72,21 +74,75 @@ const tmdbKey = import.meta.env.PUBLIC_TMDB_KEY || 'test';
     </div>
   </div>
 
+  <!-- TMDB Rate Limit Warning Banner -->
+  <div id="rate-limit-banner" class={`${tmdbStatus.isRateLimited ? 'block' : 'hidden'} fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto`}>
+    <div class="glass-card rounded-2xl p-4 border border-amber-500/40 shadow-xl shadow-black/60 bg-canvas/85 backdrop-blur-md">
+      <div class="flex items-start gap-3">
+        <span class="text-amber-500 text-xl animate-pulse">⏳</span>
+        <div class="flex-1">
+          <p class="text-nest-text text-sm font-semibold">TMDB API Rate Limit Reached</p>
+          <p class="text-nest-muted text-xs mt-1">MoviesNest is currently operating in mock data fallback mode due to high request traffic.</p>
+        </div>
+        <button onclick="document.getElementById('rate-limit-banner').classList.add('hidden')"
+          class="text-nest-muted hover:text-nest-text text-sm cursor-pointer">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TMDB Auth Error Warning Banner -->
+  <div id="auth-error-banner" class={`${tmdbStatus.isAuthError ? 'block' : 'hidden'} fixed bottom-4 left-4 right-4 z-50 max-w-md mx-auto`}>
+    <div class="glass-card rounded-2xl p-4 border border-red-500/40 shadow-xl shadow-black/60 bg-canvas/85 backdrop-blur-md">
+      <div class="flex items-start gap-3">
+        <span class="text-red-500 text-xl animate-pulse">🔒</span>
+        <div class="flex-1">
+          <p class="text-nest-text text-sm font-semibold">TMDB API Key Invalid</p>
+          <p class="text-nest-muted text-xs mt-1">Authentication failed. Please verify your TMDB credentials. Operating in mock fallback mode.</p>
+        </div>
+        <button onclick="document.getElementById('auth-error-banner').classList.add('hidden')"
+          class="text-nest-muted hover:text-nest-text text-sm cursor-pointer">✕</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // Client-side VPN detection — ping a TMDB image endpoint
+    // Client-side TMDB Status and VPN block detection
     (async () => {
       if (window.location.pathname === '/blocked') return;
       try {
-        const key = document.querySelector('meta[name="tmdb-status"]')?.getAttribute('content') || 'test';
-        await fetch('https://api.themoviedb.org/3/configuration?api_key=' + key, {
-          signal: AbortSignal.timeout(5000),
+        const key = document.querySelector('meta[name="tmdb-status"]')?.getAttribute('content') || '';
+        if (!key || key === 'your_api_key_here') {
+          return;
+        }
+        
+        const res = await fetch('https://api.tmdb.org/3/configuration?api_key=' + key, {
+          signal: AbortSignal.timeout(5000)
+        });
+
+        if (res.status === 429) {
+          const banner = document.getElementById('rate-limit-banner');
+          if (banner) {
+            banner.classList.remove('hidden');
+            banner.classList.add('block');
+          }
+        } else if (res.status === 401 || res.status === 403) {
+          const banner = document.getElementById('auth-error-banner');
+          if (banner) {
+            banner.classList.remove('hidden');
+            banner.classList.add('block');
+          }
+        }
+        
+        // 2. Check if the image CDN domain is reachable (crucial for cast & recommendations posters)
+        await fetch('https://image.tmdb.org/t/p/w92/placeholder.jpg', {
+          signal: AbortSignal.timeout(4000),
           mode: 'no-cors'
         });
       } catch (err) {
-        // If fetch throws, ISP is blocking
+        // Network connection error / ISP block (either API domain or image CDN is blocked)
         const banner = document.getElementById('vpn-banner');
         if (banner) {
           banner.classList.remove('hidden');
+          banner.classList.add('block');
         }
       }
     })();

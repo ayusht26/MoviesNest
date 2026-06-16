@@ -21,13 +21,10 @@ interface Season {
 interface Props {
   showId: number;
   seasons: Season[];
-  currentSeason: number;
-  currentEpisode: number;
-  onSelect: (season: number, episode: number) => void;
 }
 
-export default function EpisodeSelector({ showId, seasons, currentSeason, currentEpisode, onSelect }: Props) {
-  const [activeSeason, setActiveSeason] = useState(currentSeason);
+export default function EpisodeSelector({ showId, seasons }: Props) {
+  const [activeSeason, setActiveSeason] = useState(seasons.length > 0 ? seasons.filter(s => s.season_number > 0)[0]?.season_number || 1 : 1);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -92,16 +89,12 @@ export default function EpisodeSelector({ showId, seasons, currentSeason, curren
         ) : episodes.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {episodes.map(episode => {
-              const isPlaying = activeSeason === currentSeason && episode.episode_number === currentEpisode;
+              const playHref = `/play/tv/${showId}/${activeSeason}/${episode.episode_number}`;
               return (
-                <button
+                <a
                   key={episode.episode_number}
-                  onClick={() => onSelect(activeSeason, episode.episode_number)}
-                  className={`flex gap-3 text-left p-3 rounded-lg border transition-all duration-200 group w-full ${
-                    isPlaying
-                      ? 'border-cyan/40 bg-cyan/5 shadow-md shadow-cyan/5'
-                      : 'border-neutral-800/40 bg-neutral-900/25 hover:bg-neutral-900/65 hover:border-neutral-800'
-                  }`}
+                  href={playHref}
+                  className="flex gap-3 text-left p-3 rounded-lg border border-neutral-800/40 bg-neutral-900/25 hover:bg-neutral-900/65 hover:border-neutral-800 transition-all duration-200 group w-full cursor-pointer"
                 >
                   {/* Thumbnail Still */}
                   <div className="relative w-[110px] sm:w-[130px] aspect-[16/10] rounded overflow-hidden bg-neutral-950 flex-shrink-0">
@@ -112,11 +105,7 @@ export default function EpisodeSelector({ showId, seasons, currentSeason, curren
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      {isPlaying ? (
-                        <Check className="w-5 h-5 text-cyan" />
-                      ) : (
-                        <Play className="w-5 h-5 text-white fill-white/80" />
-                      )}
+                      <Play className="w-5 h-5 text-white fill-white/80" />
                     </div>
                   </div>
 
@@ -126,11 +115,6 @@ export default function EpisodeSelector({ showId, seasons, currentSeason, curren
                       <span className="font-mono text-[9px] text-cyan font-bold tracking-wide uppercase">
                         EP {episode.episode_number}
                       </span>
-                      {isPlaying && (
-                        <span className="text-[8px] px-1.5 py-0.2 rounded bg-cyan text-black font-bold font-mono">
-                          PLAYING
-                        </span>
-                      )}
                     </div>
                     <h4 className="text-xs font-semibold text-white group-hover:text-cyan transition-colors truncate">
                       {episode.name}
@@ -141,7 +125,7 @@ export default function EpisodeSelector({ showId, seasons, currentSeason, curren
                       </p>
                     )}
                   </div>
-                </button>
+                </a>
               );
             })}
           </div>

@@ -22,7 +22,7 @@ interface Props {
   runtime?: number;
   tagline?: string;
   media_type: 'movie' | 'tv';
-  onPlayClick?: () => void;
+  playUrl?: string;
 }
 
 export default function DetailHero({
@@ -37,7 +37,7 @@ export default function DetailHero({
   runtime,
   tagline,
   media_type,
-  onPlayClick,
+  playUrl,
 }: Props) {
   const [backdropLoaded, setBackdropLoaded] = useState(false);
   const [posterLoaded, setPosterLoaded] = useState(false);
@@ -138,15 +138,15 @@ export default function DetailHero({
             </div>
 
             {/* Action Buttons */}
-            {onPlayClick && (
+            {playUrl && (
               <div className="flex justify-center lg:justify-start">
-                <button
-                  onClick={onPlayClick}
+                <a
+                  href={playUrl}
                   className="group flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-cyan text-black text-xs font-bold uppercase tracking-wider hover:bg-white transition-all duration-300 shadow-md shadow-cyan/10"
                 >
                   <Play className="w-4 h-4 fill-current" />
                   Launch Player
-                </button>
+                </a>
               </div>
             )}
           </div>

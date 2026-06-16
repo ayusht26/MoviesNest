@@ -141,7 +141,7 @@ export default function HeroSection({ items }: Props) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
               transition={{ duration: 0.5 }}
-              className="max-w-xl pointer-events-auto"
+              className="max-w-xl pointer-events-auto pl-12 sm:pl-16 md:pl-20"
             >
               {/* Tags */}
               <div className="flex items-center gap-3 mb-3">

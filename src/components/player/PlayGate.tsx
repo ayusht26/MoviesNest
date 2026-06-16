@@ -111,6 +111,7 @@ export default function PlayGate(props: Props) {
                 autoPlay={true}
                 title={props.title}
                 posterUrl={props.posterUrl}
+                onClose={() => setRevealed(false)}
               />
             ) : (
               <VidkingPlayer
@@ -123,6 +124,7 @@ export default function PlayGate(props: Props) {
                 episodeName={tvProps.episodeName}
                 posterUrl={props.posterUrl}
                 onNextEpisode={tvProps.onNextEpisode}
+                onClose={() => setRevealed(false)}
               />
             )}
           </motion.div>

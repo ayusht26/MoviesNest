@@ -10,7 +10,7 @@ export const EMBED_SERVERS: EmbedServer[] = [
     id: 'vidking',
     name: 'VidKing',
     buildMovieUrl: (id, progress) =>
-      `https://www.vidking.net/embed/movie/${id}?color=00D4FF&autoPlay=true${progress && progress > 10 ? `&progress=${Math.floor(progress)}` : ''}`,
+      `https://www.vidking.net/embed/movie/${id}?autoPlay=true${progress && progress > 10 ? `&progress=${Math.floor(progress)}` : ''}`,
     buildTvUrl: (id, s, e, progress) =>
       `https://www.vidking.net/embed/tv/${id}/${s}/${e}?color=00D4FF&autoPlay=true&nextEpisode=true&episodeSelector=true${progress && progress > 10 ? `&progress=${Math.floor(progress)}` : ''}`,
   },

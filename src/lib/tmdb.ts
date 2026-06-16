@@ -1,5 +1,5 @@
 // src/lib/tmdb.ts
-const BASE = 'https://api.themoviedb.org/3';
+const BASE = 'https://api.tmdb.org/3';
 const IMG  = 'https://image.tmdb.org/t/p';
 const KEY  = import.meta.env.PUBLIC_TMDB_KEY;
 const TOKEN = import.meta.env.PUBLIC_TMDB_TOKEN;
@@ -123,6 +123,19 @@ const hasAuth = () => {
   return hasKey || hasToken;
 };
 
+// Global server-side trackers
+export let isRateLimited = false;
+export let isAuthError = false;
+
+export function getTMDBStatus() {
+  return {
+    isRateLimited,
+    isAuthError,
+    hasAuth: hasAuth(),
+    fallbackActive: !hasAuth() || isRateLimited || isAuthError
+  };
+}
+
 async function tmdb(endpoint: string, params: Record<string,string> = {}): Promise<any> {
   if (!hasAuth()) {
     console.warn(`[TMDB API] Neither PUBLIC_TMDB_KEY nor PUBLIC_TMDB_TOKEN is configured. Using fallback mock data.`);
@@ -149,7 +162,15 @@ async function tmdb(endpoint: string, params: Record<string,string> = {}): Promi
       signal: AbortSignal.timeout(8000), // 8s timeout
     });
     if (!res.ok) {
-      console.warn(`TMDB error status: ${res.status}. Falling back to mock data.`);
+      if (res.status === 429) {
+        isRateLimited = true;
+        console.warn(`[TMDB API] Rate limit reached (429). Falling back to mock data.`);
+      } else if (res.status === 401 || res.status === 403) {
+        isAuthError = true;
+        console.warn(`[TMDB API] Authentication failed (status ${res.status}). Key/token might be invalid or suspended. Falling back to mock data.`);
+      } else {
+        console.warn(`TMDB error status: ${res.status}. Falling back to mock data.`);
+      }
       return getMockResponse(endpoint, params);
     }
     return res.json();
@@ -177,6 +198,25 @@ async function tmdb(endpoint: string, params: Record<string,string> = {}): Promi
 function getMockResponse(endpoint: string, params: Record<string, string> = {}): any {
   if (endpoint.startsWith('/genre/')) {
     return { genres: MOCK_GENRES };
+  }
+
+  if (endpoint.startsWith('/person/')) {
+    const id = Number(endpoint.match(/\/person\/(\d+)/)?.[1] || 1);
+    return {
+      id,
+      name: 'Robert Downey Jr.',
+      biography: 'Robert John Downey Jr. is an American actor, producer, and singer. His career has been characterized by critical and popular success in his youth, followed by a period of substance abuse and legal difficulties, before a resurgence of commercial success in middle age.',
+      profile_path: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop',
+      known_for_department: 'Acting',
+      birthday: '1965-04-04',
+      place_of_birth: 'Manhattan, New York, USA',
+      combined_credits: {
+        cast: [
+          { id: 299534, title: 'Avengers: Endgame', poster_path: '/placeholder.jpg', media_type: 'movie', vote_count: 5000, vote_average: 8.3 },
+          { id: 155, title: 'The Dark Knight', poster_path: '/placeholder.jpg', media_type: 'movie', vote_count: 4000, vote_average: 8.5 }
+        ]
+      }
+    };
   }
   
   if (endpoint.includes('/trending/')) {
@@ -314,4 +354,17 @@ export const NETWORKS = [
 
 export const getDiscoverByNetwork = (networkId: string, mediaType: 'movie' | 'tv' = 'tv') => 
   tmdb(`/discover/${mediaType}`, { with_networks: networkId, sort_by: 'popularity.desc' });
+
+// Additional exports to resolve page compilation errors
+export const discoverMovies = (params: Record<string, string> = {}) => tmdb('/discover/movie', params);
+export const discoverTV = (params: Record<string, string> = {}) => tmdb('/discover/tv', params);
+export const getMovieGenres = () => tmdb('/genre/movie/list');
+export const getTVGenres = () => tmdb('/genre/tv/list');
+export const getPopularMovies = (page = 1) => tmdb('/movie/popular', { page: String(page) });
+export const getPopularTV = (page = 1) => tmdb('/tv/popular', { page: String(page) });
+export const getTopRatedMovies = (page = 1) => tmdb('/movie/top_rated', { page: String(page) });
+export const getTopRatedTV = (page = 1) => tmdb('/tv/top_rated', { page: String(page) });
+export const getPerson = (id: string) => tmdb(`/person/${id}`, { append_to_response: 'combined_credits' });
+export const img = (path: string, size = 'w500') => imgUrl(path, size);
+
 

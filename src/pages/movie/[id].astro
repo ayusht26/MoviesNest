@@ -2,7 +2,6 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/layout/Navbar';
 import DetailHero from '../../components/detail/DetailHero';
-import PlayGate from '../../components/player/PlayGate';
 import CastRow from '../../components/detail/CastRow';
 import SimilarRow from '../../components/detail/SimilarRow';
 import Footer from '../../components/layout/Footer';
@@ -51,36 +50,12 @@ const similar = movie.similar?.results || [];
       runtime={runtime}
       tagline={tagline}
       media_type="movie"
-      onPlayClick={() => {
-        const el = document.getElementById('player-section');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }}
+      playUrl={`/play/movie/${id}`}
       client:load
     />
 
-    {/* Video Player Section */}
-    <div id="player-section" class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 mt-12 scroll-mt-24">
-      <div class="text-center mb-6">
-        <h2 class="text-xl sm:text-2xl font-semibold text-white tracking-tight flex items-center justify-center gap-2">
-          <span class="w-1.5 h-6 rounded-full bg-cyan inline-block animate-pulse" />
-          Cinema Stream Player.
-        </h2>
-        <p class="text-xs text-gray-400 mt-1 font-mono uppercase tracking-wider">Now Playing: {title}</p>
-      </div>
-
-      <div class="shadow-level-3 rounded-xl overflow-hidden border border-neutral-800 bg-black">
-        <PlayGate
-          type="movie"
-          tmdbId={id}
-          title={title}
-          backdropUrl={backdrop}
-          client:visible
-        />
-      </div>
-    </div>
-
     {/* Cast & Similar Movies Rows */}
-    <div class="mt-16 space-y-12 pb-16">
+    <div class="mt-12 space-y-12 pb-16">
       {cast.length > 0 && <CastRow cast={cast} />}
       {similar.length > 0 && <SimilarRow items={similar} media_type="movie" />}
     </div>

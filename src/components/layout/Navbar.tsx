@@ -101,7 +101,7 @@ export default function Navbar({ cinemaMode = false }: Props) {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md transition-all duration-300 ${bgStyle}`}
+        className={`absolute top-0 left-0 right-0 z-50 backdrop-blur-md transition-all duration-300 ${bgStyle}`}
       >
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">

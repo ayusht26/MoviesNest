@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import VidkingPlayer from '../../../components/player/VidkingPlayer';
+import { getMovie, imgUrl } from '../../../lib/tmdb';
+
+const { id } = Astro.params;
+
+let movie = null;
+try {
+  movie = await getMovie(id!);
+} catch (e) {
+  console.error(`Error fetching movie for player ${id}:`, e);
+}
+
+if (!movie || !movie.id) {
+  return new Response("Movie not found", { status: 404 });
+}
+
+const title = movie.title || 'Watch Movie';
+const poster = movie.poster_path ? imgUrl(movie.poster_path, 'w342') : '';
+---
+
+<BaseLayout title={`Streaming: ${title}`} cinemaMode={true}>
+  <main class="fixed inset-0 w-screen h-screen bg-black overflow-hidden z-[9999]">
+    <VidkingPlayer
+      type="movie"
+      tmdbId={id!}
+      autoPlay={true}
+      title={title}
+      posterUrl={poster}
+      onClose={() => {
+        window.location.href = `/movie/${id}`;
+      }}
+      client:load
+    />
+  </main>
+</BaseLayout>
